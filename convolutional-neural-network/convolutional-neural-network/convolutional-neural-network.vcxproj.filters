@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="02 - image-manager">
+      <UniqueIdentifier>{8e334e1a-c665-4ecc-b053-a81c9ba92171}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01 - multy-layer-perceptron">
+      <UniqueIdentifier>{45986e9f-f788-4556-a48d-61b7af9bc5cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01 - multy-layer-perceptron\Header Files">
+      <UniqueIdentifier>{59c9fb9a-8f99-4ebc-9d59-9dc93b66ac25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01 - multy-layer-perceptron\Source Files">
+      <UniqueIdentifier>{2bfbad9d-94aa-43be-ad3c-05cea3395bcc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 - convolutional-neural-network">
+      <UniqueIdentifier>{9b3dfa35-e6c7-4a50-a233-360d5ad5370a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 - convolutional-neural-network\Header Files">
+      <UniqueIdentifier>{4e6a403b-0072-42bb-9cc3-22d207df60c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 - convolutional-neural-network\Source Files">
+      <UniqueIdentifier>{87bebfec-27e9-4903-bf52-9dba580120d4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="neuron.cpp">
+      <Filter>01 - multy-layer-perceptron\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="layer.cpp">
+      <Filter>01 - multy-layer-perceptron\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="multy-layer-perceptron.cpp">
+      <Filter>01 - multy-layer-perceptron\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="activation-function.cpp">
+      <Filter>01 - multy-layer-perceptron\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mlp-input-data.cpp">
+      <Filter>01 - multy-layer-perceptron\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="image-manager.cpp">
+      <Filter>02 - image-manager</Filter>
+    </ClCompile>
+    <ClCompile Include="convolutiona-neural-network.cpp">
+      <Filter>03 - convolutional-neural-network\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="convolutional-neural-network.cpp" />
+    <ClCompile Include="process-layer.cpp">
+      <Filter>03 - convolutional-neural-network\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pooling-operation.cpp">
+      <Filter>03 - convolutional-neural-network\Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="neuron.h">
+      <Filter>01 - multy-layer-perceptron\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="layer.h">
+      <Filter>01 - multy-layer-perceptron\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="multy-layer-perceptron.h">
+      <Filter>01 - multy-layer-perceptron\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="activation-function.h">
+      <Filter>01 - multy-layer-perceptron\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mlp-input-data.h">
+      <Filter>01 - multy-layer-perceptron\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="data-manager.h">
+      <Filter>01 - multy-layer-perceptron\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="image-manager.h">
+      <Filter>02 - image-manager</Filter>
+    </ClInclude>
+    <ClInclude Include="convolutional-neural-network.h">
+      <Filter>03 - convolutional-neural-network\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="process-layer.h">
+      <Filter>03 - convolutional-neural-network\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pooling-operation.h">
+      <Filter>03 - convolutional-neural-network\Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
