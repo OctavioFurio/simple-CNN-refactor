@@ -3,6 +3,14 @@
 
 
 
+
+MLP::MLP()
+{
+
+}
+
+
+
 MLP::MLP(std::vector<size_t> mlpArchitecture, size_t inputSize, IActivationFunction* activationFunction, double learningRate)
 {
 	_maxEphocs = 50000000;
@@ -87,6 +95,22 @@ std::vector<double> MLP::Backward(std::vector<double> correctOutputs, std::vecto
 	_layers[0].UpdateHiddenLayerNeurons(accumulatedPropagatedErrors, inputs);
 
 
+	///----------------
+	/// apagar isso
+	///----------------
+	
+	
+	std::vector<double> fistLayerInputGradient  =  _layers[0].AccumulatedPropagatedErrorByPreviousLayer(inputs.size());
+	
+
+	std::cout << "backward - output\n";
+	for (auto o : fistLayerInputGradient) { std::cout << o << "  "; }
+	
+
+
+	///----------------
+
+
 	return errors;
 }
 
@@ -142,13 +166,11 @@ void MLP::Training(std::vector<TrainigData> trainigSet, int callbackExecutionPer
 
 	while (ephocs <= _maxEphocs  &&  errors > _minError  && errorEnergy > _errorEnergy  &&  minimalChangesCounter != 20000) {
 
-		if (ephocs % 100 == 0) { callback(); }
-
 		for (int i = 0; i < trainingSetLenght; i++) {
 			std::vector<double> inputs  =  trainigSet[i].first;
 			std::vector<double> labels  =  trainigSet[i].second;
 
-			inputs.insert(inputs.begin(), 1.0);
+			inputs.insert(inputs.begin(), 1.0);                                     // <-- 1.0 que sera multiplicado pelo bias no produto vetorial
 
 			std::vector<double> lastLayaerOutput = Forward(inputs);
 			_lastLayerErrors = Backward(labels, inputs);

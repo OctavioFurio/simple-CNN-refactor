@@ -27,13 +27,17 @@ class MLP {
 		double _minError;
 		double _errorEnergy;
 
+		MLP();
+
 		void LoadFromJson(const Json& j);
 		void LoadWeightsFromJson(const char* filePath);
 		IActivationFunction* StringToActivationFunction(std::string functionName);
 
+		friend class CNN;
+
 
 	public:
-		MLP(std::vector<size_t> mlpArchitecture, size_t inputSize, IActivationFunction* _activationFunction = new Sigmoid(), double learningRate = 0.03);
+		MLP(std::vector<size_t> mlpArchitecture, size_t inputSize, IActivationFunction* _activationFunction = new Tanh(), double learningRate = 0.03);
 		MLP(std::string filePath);
 		~MLP();
 

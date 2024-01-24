@@ -46,11 +46,16 @@
     <ClCompile Include="convolutiona-neural-network.cpp">
       <Filter>03 - convolutional-neural-network\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="convolutional-neural-network.cpp" />
     <ClCompile Include="process-layer.cpp">
       <Filter>03 - convolutional-neural-network\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pooling-operation.cpp">
+      <Filter>03 - convolutional-neural-network\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="convolution-layer.cpp">
+      <Filter>03 - convolutional-neural-network\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utils.cpp">
       <Filter>03 - convolutional-neural-network\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -83,6 +88,12 @@
       <Filter>03 - convolutional-neural-network\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="pooling-operation.h">
+      <Filter>03 - convolutional-neural-network\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="convolution-layer.h">
+      <Filter>03 - convolutional-neural-network\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utils.h">
       <Filter>03 - convolutional-neural-network\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

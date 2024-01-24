@@ -11,7 +11,9 @@ using Matrix = Eigen::MatrixXd;
 
 class IPooling {
 	public:
-		virtual Matrix Pooling(Eigen::MatrixXd& input) = 0;
+		virtual Matrix FowardPooling(Eigen::MatrixXd& input) = 0;
+		virtual size_t Rows() = 0;
+		virtual size_t Cols() = 0;
 };
 
 
@@ -19,33 +21,41 @@ class IPooling {
 class DontPooling : public IPooling {
 	public:
 		DontPooling();
-		virtual Matrix Pooling(Eigen::MatrixXd& input) override;
+		virtual Matrix FowardPooling(Eigen::MatrixXd& input) override;
+		virtual size_t Rows() override;
+		virtual size_t Cols() override;
 };
+ 
+
+
+class AveragePooling : public IPooling {
+	protected:
+		Eigen::MatrixXd _unitaryMatrix;
+		size_t _rows;
+		size_t _cols;
+
+	public:
+		AveragePooling(size_t rows, size_t cols);
+
+		virtual Matrix FowardPooling(Eigen::MatrixXd& input) override;
+		virtual size_t Rows() override;
+		virtual size_t Cols() override;
+};
+
 
 
 
 class MaxPooling : public IPooling {
 	protected:
-		Eigen::MatrixXd _unitaryMatrix;
-		unsigned _rows;
-		unsigned _cols;
+		size_t _rows;
+		size_t _cols;
 
 	public:
-		MaxPooling(unsigned rows, unsigned cols);
-		virtual Matrix Pooling(Eigen::MatrixXd& input) override;
-};
+		MaxPooling(size_t rows, size_t cols);
 
-
-
-
-class AveragePooling : public IPooling {
-	protected:
-		unsigned _rows;
-		unsigned _cols;
-
-	public:
-		AveragePooling(unsigned rows, unsigned cols);
-		virtual Matrix Pooling(Eigen::MatrixXd& input) override;
+		virtual Matrix FowardPooling(Eigen::MatrixXd& input) override;
+		virtual size_t Rows() override;
+		virtual size_t Cols() override;
 };
 
 

@@ -3,10 +3,10 @@
 
 
 /// -----------------
-/// Max Pooling
+/// AveragePooling
 /// -----------------
 
-MaxPooling::MaxPooling(unsigned rows, unsigned cols)
+AveragePooling::AveragePooling(size_t rows, size_t cols)
 	: _rows(rows), _cols(cols)
 {
     _unitaryMatrix  =  Eigen::MatrixXd::Ones(_rows, _cols);
@@ -14,7 +14,7 @@ MaxPooling::MaxPooling(unsigned rows, unsigned cols)
 
 
 
-Matrix MaxPooling::Pooling(Eigen::MatrixXd& input)
+Matrix AveragePooling::FowardPooling(Eigen::MatrixXd& input)
 {
     const int rows = (input.rows() - _rows) + 1;
     const int cols = (input.cols() - _cols) + 1;
@@ -31,22 +31,32 @@ Matrix MaxPooling::Pooling(Eigen::MatrixXd& input)
     return result;
 }
 
+size_t AveragePooling::Rows()
+{
+    return _rows;
+}
+
+size_t AveragePooling::Cols()
+{
+    return _cols;
+}
+
 
 
 
 
 /// -----------------
-/// Average Pooling
+/// MaxPooling
 /// -----------------
 
-AveragePooling::AveragePooling(unsigned rows, unsigned cols)
+MaxPooling::MaxPooling(size_t rows, size_t cols)
     : _rows(rows), _cols(cols)
 {
 }
 
 
 
-Matrix AveragePooling::Pooling(Eigen::MatrixXd& input)
+Matrix MaxPooling::FowardPooling(Eigen::MatrixXd& input)
 {
     const int rows = (input.rows() - _rows) + 1;
     const int cols = (input.cols() - _cols) + 1;
@@ -63,6 +73,16 @@ Matrix AveragePooling::Pooling(Eigen::MatrixXd& input)
     return result;
 }
 
+size_t MaxPooling::Rows()
+{
+    return _rows;
+}
+
+size_t MaxPooling::Cols()
+{
+    return _cols;
+}
+
 
 
 
@@ -74,7 +94,17 @@ DontPooling::DontPooling()
 {
 }
 
-Matrix DontPooling::Pooling(Eigen::MatrixXd& input)
+Matrix DontPooling::FowardPooling(Eigen::MatrixXd& input)
 {
     return input;
+}
+
+size_t DontPooling::Rows()
+{
+    return 0;
+}
+
+size_t DontPooling::Cols()
+{
+    return 0;
 }

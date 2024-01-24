@@ -189,8 +189,8 @@ copy "D:\w\.debugger\convolutional-neural-network\.dependencies\opencv\build\x64
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="activation-function.cpp" />
+    <ClCompile Include="convolution-layer.cpp" />
     <ClCompile Include="convolutiona-neural-network.cpp" />
-    <ClCompile Include="convolutional-neural-network.cpp" />
     <ClCompile Include="process-layer.cpp" />
     <ClCompile Include="image-manager.cpp" />
     <ClCompile Include="layer.cpp" />
@@ -199,9 +199,11 @@ copy "D:\w\.debugger\convolutional-neural-network\.dependencies\opencv\build\x64
     <ClCompile Include="multy-layer-perceptron.cpp" />
     <ClCompile Include="neuron.cpp" />
     <ClCompile Include="pooling-operation.cpp" />
+    <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="activation-function.h" />
+    <ClInclude Include="convolution-layer.h" />
     <ClInclude Include="convolutional-neural-network.h" />
     <ClInclude Include="process-layer.h" />
     <ClInclude Include="data-manager.h" />
@@ -211,6 +213,7 @@ copy "D:\w\.debugger\convolutional-neural-network\.dependencies\opencv\build\x64
     <ClInclude Include="multy-layer-perceptron.h" />
     <ClInclude Include="neuron.h" />
     <ClInclude Include="pooling-operation.h" />
+    <ClInclude Include="utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
