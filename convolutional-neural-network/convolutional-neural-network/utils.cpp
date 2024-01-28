@@ -31,7 +31,7 @@ cv::Mat Utils::MatrixToImage(Eigen::MatrixXd matrix)
         }
     }
 
-    //std::cout << "\n\n\n" << matrix << "\n\n\n";
+    std::cout << "\n\n\n" << matrix << "\n\n\n";
 
     return mat;
 }

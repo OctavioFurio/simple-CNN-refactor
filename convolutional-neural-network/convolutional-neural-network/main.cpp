@@ -28,8 +28,8 @@ int main(int argc, const char** argv)
     */
 	
     /*
-    cv::Mat image  =  cv::imread("..\\..\\.resources\\humano.png", cv::IMREAD_GRAYSCALE);
-    //cv::resize(image, image, cv::Size(image.rows/2, image.cols/2));
+    cv::Mat image  =  cv::imread("..\\..\\.resources\\humano-original.png", cv::IMREAD_GRAYSCALE);
+    cv::resize(image, image, cv::Size(image.rows/2, image.cols/2));
 
     cv::namedWindow("Original Imagem", cv::WINDOW_NORMAL);
     cv::imshow("Original Imagem", image);
@@ -71,7 +71,7 @@ int main(int argc, const char** argv)
 
     cv::namedWindow("pooling", cv::WINDOW_NORMAL);
     cv::imshow("pooling", pooledImage);
-    std::cout << matrixWithPooling << "\n\n";
+    //std::cout << matrixWithPooling << "\n\n";
     
 
     cv::waitKey(0);
@@ -217,7 +217,7 @@ int main(int argc, const char** argv)
     while (true) {
         std::vector<double> givemOutput  =  cnn.Forward(inputImage);
         
-        std::vector<double> errors  =  cnn.Backward({ 0, 0, 1, 0 }, inputImage);
+        std::vector<double> errors  =  cnn.Backward({ 1, 0, 1, 0 }, inputImage);
 
 
 
@@ -234,6 +234,40 @@ int main(int argc, const char** argv)
     cv::waitKey(0);
     std::cout << "\n\n\n[SUCESSO - 1]\n\n\n";
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

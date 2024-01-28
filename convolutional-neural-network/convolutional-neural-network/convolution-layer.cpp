@@ -8,8 +8,6 @@ ConvolutionLayer::ConvolutionLayer(Eigen::MatrixXd kernel, int padding)
 {
     _gradient = Eigen::MatrixXd::Zero(_kernel.rows(), _kernel.cols());
     _bias = 1.0;
-
-    _convolutionOutput = Eigen::MatrixXd(0, 0);
 }
 
 
@@ -31,8 +29,6 @@ ConvolutionLayer::ConvolutionLayer(std::vector<std::vector<double>> kernel, int 
         }
     }
 
-    _convolutionOutput = Eigen::MatrixXd(0, 0);
-
 }
 
 
@@ -53,8 +49,6 @@ Eigen::MatrixXd& ConvolutionLayer::CalculateConvolution(Eigen::MatrixXd& input)
         convolutedInput  =  Convolution2D(input, _kernel);
     }
 
-    _convolutionOutput = convolutedInput;
-
     return convolutedInput;
 }
 
@@ -71,8 +65,6 @@ Eigen::MatrixXd ConvolutionLayer::CalculateConvolution(cv::Mat& image)
     } else {
         convolutedInput  =  Convolution2D(input, _kernel);
     }
-    
-    _convolutionOutput = convolutedInput;
 
     return convolutedInput;
 }
@@ -171,11 +163,4 @@ Eigen::MatrixXd ConvolutionLayer::Convolution2D(Eigen::MatrixXd& input, Eigen::M
 Eigen::MatrixXd ConvolutionLayer::Kernel()
 {
     return _kernel;
-}
-
-
-
-Eigen::MatrixXd ConvolutionLayer::Output()
-{
-    return _convolutionOutput;
 }

@@ -17,8 +17,6 @@ using Matrix = Eigen::MatrixXd;
 class ConvolutionLayer {
 
 	private:
-		Eigen::MatrixXd _convolutionOutput;
-
 		Eigen::MatrixXd _kernel;
 		Eigen::MatrixXd _gradient;
 		int _padding;
@@ -39,7 +37,7 @@ class ConvolutionLayer {
 
 		Eigen::MatrixXd Kernel();
 
-		Eigen::MatrixXd Output();
+		//Eigen::MatrixXd Output();
 
 };
 

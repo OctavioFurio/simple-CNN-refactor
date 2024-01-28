@@ -20,8 +20,8 @@ CNN::CNN(
 	int cols = inputCols;
 
 	for (auto processLayer : processLayers) {
-		rows  =  std::ceil( (rows - processLayer.KernelRows() + 1) / processLayer.PoolingRows() );
-		cols  =  std::ceil( (cols - processLayer.KernelCols() + 1) / processLayer.PoolingCols() );
+		rows  =  (rows - processLayer.KernelRows() + 1)   /   processLayer.PoolingRows();
+		cols  =  (cols - processLayer.KernelCols() + 1)   /   processLayer.PoolingCols();
 
 		assert( rows > 0   &&   cols > 0 );
 	}
@@ -49,11 +49,6 @@ std::vector<double> CNN::Forward(Eigen::MatrixXd input)
 		 Eigen::MatrixXd activatedMatrix  =  processLayer.ApplayActivationFunction(convolvedMatrix);
 		 Eigen::MatrixXd pooledMatrix	 =  processLayer.CalculatePooling( activatedMatrix );
 
-		 
-		 //std::vector<double> flattedPooledMatrix = Flattening(pooledMatrix);
-		 //std::vector<double> normalizedMatrix = Utils::BatchNormalization(flattedPooledMatrix);
-		 //processResult  =  Reshape(normalizedMatrix, pooledMatrix.rows(), pooledMatrix.cols());
-
 		 processResult = pooledMatrix;
 	}
 
@@ -61,7 +56,7 @@ std::vector<double> CNN::Forward(Eigen::MatrixXd input)
 	_reshapeCols = processResult.cols();
 
 	_flattedMatrix  =  Flattening( processResult );
-	std::vector<double> normalizedVector = Utils::BatchNormalization(_flattedMatrix);//Utils::NormalizeVector(_flattedMatrix, -1.0, 1.0);
+	std::vector<double> normalizedVector = Utils::BatchNormalization(_flattedMatrix);
 
 
 	normalizedVector.insert(normalizedVector.begin(), 1.0);
