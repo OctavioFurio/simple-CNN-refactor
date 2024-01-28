@@ -29,7 +29,7 @@ class Neuron {
 
 
 	public:
-		Neuron(size_t inputSize, IActivationFunction* actFun = new Sigmoid(), double leraningRate = 0.03);
+		Neuron(size_t inputSize, IActivationFunction* actFun = new Tanh(), double leraningRate = 0.03);
 		~Neuron();
 
 		double CalculateOutput(std::vector<double> inputs);

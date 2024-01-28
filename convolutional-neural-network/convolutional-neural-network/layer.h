@@ -1,5 +1,7 @@
 #pragma once
 
+#include <limits>
+#include "utils.h"
 #include "neuron.h"
 
 
@@ -16,7 +18,7 @@ class Layer {
 
 
 	public:
-		Layer(size_t neuronQuantity, size_t inputSize, IActivationFunction* actFun = new Sigmoid(), size_t index = 0, double neuronLerningRate = 0.03);
+		Layer(size_t neuronQuantity, size_t inputSize, IActivationFunction* actFun = new Tanh(), size_t index = 0, double neuronLerningRate = 0.03);
 		~Layer();
 
 		std::vector<double> CalculateLayerOutputs(std::vector<double> inputs);

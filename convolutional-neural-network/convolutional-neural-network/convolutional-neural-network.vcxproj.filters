@@ -96,5 +96,8 @@
     <ClInclude Include="utils.h">
       <Filter>03 - convolutional-neural-network\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="layer-architecture.h">
+      <Filter>01 - multy-layer-perceptron\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

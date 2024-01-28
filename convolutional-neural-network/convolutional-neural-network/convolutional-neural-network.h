@@ -12,17 +12,6 @@
 
 
 
-struct MlpArchitecture {
-	std::vector<size_t> architecture;
-	IActivationFunction* activationFunction;
-	double lerningRate;
-
-	MlpArchitecture(std::vector<size_t> arch, IActivationFunction* actFun = new Tanh(), double _lerningRate = 0.03)
-		: architecture(arch), activationFunction(actFun), lerningRate(_lerningRate) 
-	{ }
-};
-
-
 
 class CNN {
 
@@ -31,6 +20,9 @@ class CNN {
 		MLP _mlp;
 		double _learningRate;
 
+		std::vector<double> _flattedMatrix;
+		size_t _reshapeRows;
+		size_t _reshapeCols;
 
 
 	public:
@@ -46,11 +38,13 @@ class CNN {
 		~CNN();
 
 		std::vector<double> Forward(Eigen::MatrixXd input);
+		std::vector<double> Backward(std::vector<double> correctOutputs, Eigen::MatrixXd input);
 
 
-
-		std::vector<double> Flattening(Eigen::MatrixXd input);
+		static std::vector<double> Flattening(Eigen::MatrixXd input);
 		Eigen::MatrixXd Reshape(std::vector<double> gradients, size_t rows, size_t cols);
+
+		friend std::ostream& operator<<(std::ostream& os, CNN cnn);
 
 };
 

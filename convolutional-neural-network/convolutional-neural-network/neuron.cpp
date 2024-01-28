@@ -79,6 +79,8 @@ double Neuron::CalculateGradient(double accumulatedPropagatedError)
 
     _gradient  =  accumulatedPropagatedError * du;
 
+    //std::cout << "[" << accumulatedPropagatedError << " ; " << du << "]   ";
+
     return _gradient;
 }
 
@@ -188,6 +190,9 @@ std::ostream& operator<<(std::ostream& os, Neuron neuron)
         os << w << " ; ";
     }
     os << "\b\b ]";
+
+    //os << neuron.Gradient() << "]";
+
 
     return os;
 }

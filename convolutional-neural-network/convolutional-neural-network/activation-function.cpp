@@ -91,7 +91,7 @@ double LeakyReLU::f(double x)
 
 double LeakyReLU::df(double x)
 {
-    if (x < 0) { return -0.10; } else { return 1.0; };
+    if (x < 0) { return 0.10; } else { return 1.0; };
 }
 
 const char* LeakyReLU::ToString()

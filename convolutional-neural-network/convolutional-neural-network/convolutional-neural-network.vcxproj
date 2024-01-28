@@ -205,6 +205,7 @@ copy "D:\w\.debugger\convolutional-neural-network\.dependencies\opencv\build\x64
     <ClInclude Include="activation-function.h" />
     <ClInclude Include="convolution-layer.h" />
     <ClInclude Include="convolutional-neural-network.h" />
+    <ClInclude Include="layer-architecture.h" />
     <ClInclude Include="process-layer.h" />
     <ClInclude Include="data-manager.h" />
     <ClInclude Include="image-manager.h" />

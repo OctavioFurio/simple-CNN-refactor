@@ -4,6 +4,7 @@
 #include <utility>
 #include <string>
 #include <functional>
+#include "layer-architecture.h"
 #include "mlp-input-data.h"
 #include "activation-function.h"
 #include "layer.h"
@@ -17,15 +18,18 @@ class MLP {
 
 	private:
 		std::vector<Layer> _layers;
-		std::vector<double> _lastLayerErrors;
 		std::vector<size_t> _mlpArchitecture;
 		IActivationFunction* _activationFunction;
+
 		size_t _inputSize;
 		double _learningRate;
 		int _layersSize;
+
 		size_t _maxEphocs;
 		double _minError;
 		double _errorEnergy;
+
+		std::vector<double> _lastLayerErrors;
 
 		MLP();
 
@@ -37,7 +41,8 @@ class MLP {
 
 
 	public:
-		MLP(std::vector<size_t> mlpArchitecture, size_t inputSize, IActivationFunction* _activationFunction = new Tanh(), double learningRate = 0.03);
+		MLP(size_t inputSize, std::vector<size_t> mlpArchitecture, IActivationFunction* _activationFunction = new Tanh(), double learningRate = 0.03);
+		MLP(size_t inputSize, std::vector<LayerArchitecture> layersArchitecture);
 		MLP(std::string filePath);
 		~MLP();
 
@@ -73,6 +78,8 @@ class MLP {
 		void GenerateJsonFile(const char* filePath);
 
 		std::vector<double> EvaluateInputs(std::vector<double> inputs);          // retorna o output
+
+		std::vector<double> Errors();
 
 }; 
 

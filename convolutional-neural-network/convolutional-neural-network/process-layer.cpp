@@ -31,8 +31,12 @@ ProcessLayer::~ProcessLayer()
 
 Eigen::MatrixXd ProcessLayer::CalculateConvolution(Eigen::MatrixXd input)
 {
+    // por que nao armazena
+    Eigen::MatrixXd& concolvedMatrix  =  _convolutionLayer.CalculateConvolution(input);
 
-    _convolutionOutput  =  _convolutionLayer.CalculateConvolution(input);
+    _convolutionOutput  =  concolvedMatrix;
+
+
     return _convolutionOutput;
 }
 
@@ -42,8 +46,19 @@ Eigen::MatrixXd ProcessLayer::CalculateConvolution(cv::Mat image)
 {
     Eigen::MatrixXd input  =  Utils::ImageToMatrix( image );
 
-    _convolutionOutput  =  _convolutionLayer.CalculateConvolution( input );
+    Eigen::MatrixXd& concolvedMatrix  =  _convolutionLayer.CalculateConvolution( input );
+
+    _convolutionOutput  =  concolvedMatrix;
+
     return _convolutionOutput;
+}
+
+
+
+Eigen::MatrixXd ProcessLayer::ConvolutionBackward(Eigen::MatrixXd& input, Eigen::MatrixXd& incomeGradient, double learningRate)
+{
+    Eigen::MatrixXd gradientOfLostWithRespctToInput = _convolutionLayer.Backward(input, incomeGradient, learningRate);
+    return gradientOfLostWithRespctToInput;
 }
 
 
@@ -63,39 +78,41 @@ Eigen::MatrixXd ProcessLayer::ApplayActivationFunction(Eigen::MatrixXd input)
 
 Eigen::MatrixXd ProcessLayer::CalculatePooling(Eigen::MatrixXd input)
 {
-    _poolingOutput  =  _poolingLayer->FowardPooling( input );
+    Eigen::MatrixXd& pooledMatrix  =  _poolingLayer->FowardPooling( input );
+
+    _poolingOutput  =  pooledMatrix;
+
     return _poolingOutput;
 }
 
 
-/*
-std::vector<double> ProcessLayer::Flattening(Eigen::MatrixXd input)
+
+Eigen::MatrixXd ProcessLayer::PoolingBackward(Eigen::MatrixXd input)
 {
-    std::vector<double> vec;
-    vec.reserve( input.size() );
-
-    for (int i = 0; i < input.rows(); i++) {
-        for (int j = 0; j < input.cols(); j++) {
-            vec.push_back( input(i, j) );
-        }
-    }
-
-    return vec;
+    Eigen::MatrixXd backwardPooling = _poolingLayer->BackwardPooling(input);
+    return backwardPooling;
 }
 
 
 
-Eigen::MatrixXd ProcessLayer::Reshape(std::vector<double> gradients, size_t rows, size_t cols)
+Eigen::MatrixXd ProcessLayer::ConvolutionOutout()
 {
-    Eigen::MatrixXd reshapedMatrix  =  Eigen::MatrixXd(rows, cols);
-
-    for (size_t i = 0; i < rows * cols; i++) {
-        reshapedMatrix << gradients[i];
-    }
-
-    return reshapedMatrix;
+    return _convolutionOutput;
 }
-*/
+
+
+
+Eigen::MatrixXd ProcessLayer::PoolingOutput()
+{
+    return _poolingOutput;
+}
+
+
+
+Eigen::MatrixXd ProcessLayer::Output()
+{
+    return _poolingOutput;
+}
 
 
 
@@ -119,6 +136,13 @@ int ProcessLayer::PoolingRows()
 int ProcessLayer::PoolingCols()
 {
     return _poolingLayer->Cols();
+}
+
+
+
+Eigen::MatrixXd ProcessLayer::Kernel()
+{
+    return _convolutionLayer.Kernel();
 }
 
 

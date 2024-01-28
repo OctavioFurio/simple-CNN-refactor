@@ -14,16 +14,16 @@ AveragePooling::AveragePooling(size_t rows, size_t cols)
 
 
 
-Matrix AveragePooling::FowardPooling(Eigen::MatrixXd& input)
+Matrix& AveragePooling::FowardPooling(Eigen::MatrixXd& input)
 {
-    const int rows = (input.rows() - _rows) + 1;
-    const int cols = (input.cols() - _cols) + 1;
+    const int rows = (int)std::ceil(input.rows() / _rows);
+    const int cols = (int)std::ceil(input.cols() / _cols);
 
     Eigen::MatrixXd result = Eigen::MatrixXd::Zero(rows, cols);
 
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
-            double sum = input.block(i, j, _rows, _cols).cwiseProduct(_unitaryMatrix).sum();
+            double sum = input.block(i*_rows, j*_cols, _rows, _cols).cwiseProduct(_unitaryMatrix).sum();
             result(i, j)  =  sum / (double)(_rows * _cols);
         }
     }
@@ -41,6 +41,11 @@ size_t AveragePooling::Cols()
     return _cols;
 }
 
+Matrix AveragePooling::BackwardPooling(Eigen::MatrixXd& input)
+{
+    return Matrix();
+}
+
 
 
 
@@ -54,23 +59,54 @@ MaxPooling::MaxPooling(size_t rows, size_t cols)
 {
 }
 
-
-
-Matrix MaxPooling::FowardPooling(Eigen::MatrixXd& input)
+Matrix& MaxPooling::FowardPooling(Eigen::MatrixXd& input)
 {
-    const int rows = (input.rows() - _rows) + 1;
-    const int cols = (input.cols() - _cols) + 1;
+    const int rows = input.rows() / _rows;
+    const int cols = input.cols() / _cols;
 
     Eigen::MatrixXd result = Eigen::MatrixXd::Zero(rows, cols);
 
-    for (int i = 0; i < rows; ++i) {
-        for (int j = 0; j < cols; ++j) {
-            double maxElement = input.block(i, j, _rows, _cols).maxCoeff();
+    _backwardMatrix  =  Eigen::MatrixXd::Zero(input.rows(), input.cols());
+
+    for (int i = 0; i < rows; i ++) {
+        for (int j = 0; j < cols; j ++) {
+
+            Eigen::Index maxRow, maxCol;
+
+            double maxElement = input.block(i*_rows, j*_cols, _rows, _cols).maxCoeff(&maxRow, &maxCol);
             result(i, j)  =  maxElement;
+
+            _backwardMatrix(i*_rows + maxRow, j*_cols + maxCol)  =  1.0;
         }
     }
 
+    //std::cout << "_backwardMatrix:\n" << _backwardMatrix << "\n\n";
+
     return result;
+}
+
+Matrix MaxPooling::BackwardPooling(Eigen::MatrixXd& input)
+{
+    //std::cout << "input:\n" << input << "\n\n\n";
+    //std::cout << "_backwardMatrix:\n" << _backwardMatrix << "\n\n";
+
+    for (int i = 0; i < input.rows(); i++) {
+        for (int j = 0; j < input.cols(); j++) {
+
+            //std::cout << "["<< i*_rows << "x" << j*_cols << "  -  "  << _rows << "  " << _cols <<  "]\n\n";
+
+            //std::cout << _backwardMatrix.block(i*_rows, j*_cols, _rows, _cols) << "\n\n";
+            //std::cout << _backwardMatrix << "\n\n";
+
+
+            _backwardMatrix.block(i*_rows, j*_cols, _rows, _cols) *= input(i, j);
+
+            
+        }
+    }
+
+
+    return _backwardMatrix;
 }
 
 size_t MaxPooling::Rows()
@@ -94,7 +130,7 @@ DontPooling::DontPooling()
 {
 }
 
-Matrix DontPooling::FowardPooling(Eigen::MatrixXd& input)
+Matrix& DontPooling::FowardPooling(Eigen::MatrixXd& input)
 {
     return input;
 }
@@ -107,4 +143,9 @@ size_t DontPooling::Rows()
 size_t DontPooling::Cols()
 {
     return 0;
+}
+
+Matrix DontPooling::BackwardPooling(Eigen::MatrixXd& input)
+{
+    return Matrix();
 }

@@ -23,6 +23,9 @@ std::vector<double> Layer::CalculateLayerOutputs(std::vector<double> inputs)
 {
 	int outputIndex = 1;
 
+	inputs = Utils::BatchNormalization( std::vector<double>(inputs.begin()+1, inputs.end()) );
+	inputs.insert(inputs.begin(), 1.0);
+
 	for (auto& neuron : _neurons) {
 		_outputs[outputIndex++]  =  neuron.CalculateOutput(inputs);
 	}
@@ -126,12 +129,10 @@ Layer Layer::LoadWeightsFromJson(const Json& j)
 {
 	int neuronIndex = 0;
 	for (const auto& neuronJson : j.at("layer").at("neurons")) {
-		// (*this)._neurons.push_back(Neuron::FromJson(neuronJson));
 		Neuron n = Neuron(_inputSize, _activationFunction, _neuronLerningRate);
 		n.LoadWeightsFromJson(neuronJson);
 
 		int weightSize = n.Weight().size();
-
 		
 		(*this)._neurons[neuronIndex] = n;
 
@@ -180,9 +181,11 @@ size_t Layer::LayerIndex()
 
 std::ostream& operator<<(std::ostream& os, Layer layer)
 {
-	for (auto& n : layer._neurons) {
+	/*for (auto& n : layer._neurons) {
 		os << n << "  ";
-	}
+	}*/
+
+	os << layer._neurons[0] << "  ";
 
 	return os;
 }

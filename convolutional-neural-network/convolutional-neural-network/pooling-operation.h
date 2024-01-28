@@ -11,7 +11,8 @@ using Matrix = Eigen::MatrixXd;
 
 class IPooling {
 	public:
-		virtual Matrix FowardPooling(Eigen::MatrixXd& input) = 0;
+		virtual Matrix& FowardPooling(Eigen::MatrixXd& input) = 0;
+		virtual Matrix BackwardPooling(Eigen::MatrixXd& input) = 0;
 		virtual size_t Rows() = 0;
 		virtual size_t Cols() = 0;
 };
@@ -21,9 +22,11 @@ class IPooling {
 class DontPooling : public IPooling {
 	public:
 		DontPooling();
-		virtual Matrix FowardPooling(Eigen::MatrixXd& input) override;
+		virtual Matrix& FowardPooling(Eigen::MatrixXd& input) override;
+		virtual Matrix BackwardPooling(Eigen::MatrixXd& input) override;
 		virtual size_t Rows() override;
 		virtual size_t Cols() override;
+		
 };
  
 
@@ -37,7 +40,8 @@ class AveragePooling : public IPooling {
 	public:
 		AveragePooling(size_t rows, size_t cols);
 
-		virtual Matrix FowardPooling(Eigen::MatrixXd& input) override;
+		virtual Matrix& FowardPooling(Eigen::MatrixXd& input) override;
+		virtual Matrix BackwardPooling(Eigen::MatrixXd& input) override;
 		virtual size_t Rows() override;
 		virtual size_t Cols() override;
 };
@@ -49,11 +53,13 @@ class MaxPooling : public IPooling {
 	protected:
 		size_t _rows;
 		size_t _cols;
+		Eigen::MatrixXd _backwardMatrix;
 
 	public:
 		MaxPooling(size_t rows, size_t cols);
 
-		virtual Matrix FowardPooling(Eigen::MatrixXd& input) override;
+		virtual Matrix& FowardPooling(Eigen::MatrixXd& input) override;
+		virtual Matrix BackwardPooling(Eigen::MatrixXd& input) override;
 		virtual size_t Rows() override;
 		virtual size_t Cols() override;
 };

@@ -17,7 +17,10 @@ using Matrix = Eigen::MatrixXd;
 class ConvolutionLayer {
 
 	private:
+		Eigen::MatrixXd _convolutionOutput;
+
 		Eigen::MatrixXd _kernel;
+		Eigen::MatrixXd _gradient;
 		int _padding;
 		double _bias;
 
@@ -26,13 +29,17 @@ class ConvolutionLayer {
 		ConvolutionLayer(std::vector<std::vector<double>> kernel, int padding = 0);
 		~ConvolutionLayer();
 
-		Eigen::MatrixXd CalculateConvolution(Eigen::MatrixXd& input);
+		Eigen::MatrixXd& CalculateConvolution(Eigen::MatrixXd& input);
 		Eigen::MatrixXd CalculateConvolution(cv::Mat& image);
+		Eigen::MatrixXd Backward(Eigen::MatrixXd& input, Eigen::MatrixXd& incomeGradient, double learningRate = 0.03);
 
 		static Eigen::MatrixXd Convolution2D(Eigen::MatrixXd& input, Eigen::MatrixXd& kernel);
 		static Eigen::MatrixXd Convolution2D(Eigen::MatrixXd& input, Eigen::MatrixXd& kernel, int padding);
+		static Eigen::MatrixXd Convolution2D(Eigen::MatrixXd& input, Eigen::MatrixXd& kernel, int rowPadding, int colParing);
 
 		Eigen::MatrixXd Kernel();
+
+		Eigen::MatrixXd Output();
 
 };
 

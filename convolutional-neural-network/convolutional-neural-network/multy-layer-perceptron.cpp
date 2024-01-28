@@ -11,7 +11,7 @@ MLP::MLP()
 
 
 
-MLP::MLP(std::vector<size_t> mlpArchitecture, size_t inputSize, IActivationFunction* activationFunction, double learningRate)
+MLP::MLP(size_t inputSize, std::vector<size_t> mlpArchitecture, IActivationFunction* activationFunction, double learningRate)
 {
 	_maxEphocs = 50000000;
 	_minError = -1.0;
@@ -26,6 +26,31 @@ MLP::MLP(std::vector<size_t> mlpArchitecture, size_t inputSize, IActivationFunct
 
 	for (auto neuronsInLayer : mlpArchitecture) {
 		_layers.push_back(  Layer(neuronsInLayer, currentInputSize, activationFunction, layerIndex++, learningRate)  );
+		currentInputSize = neuronsInLayer;
+	}
+}
+
+
+
+MLP::MLP(size_t inputSize, std::vector<LayerArchitecture> layersArchitecture)
+{
+	_maxEphocs = 50000000;
+	_minError = -1.0;
+	_errorEnergy = -1.0;
+	_layersSize  =  layersArchitecture.size();
+	//_mlpArchitecture = ;
+	_learningRate = 0.03;
+	_inputSize = inputSize;
+	_activationFunction = new Tanh();
+	size_t currentInputSize  =  inputSize;
+	size_t layerIndex = 0;
+
+	for (auto layerArchitecture : layersArchitecture) {
+		size_t neuronsInLayer = layerArchitecture._qntNeurons;
+		IActivationFunction* activationFunction = layerArchitecture._activationFunction;
+		double learningRate = layerArchitecture._learningRate;
+
+		_layers.push_back( Layer(neuronsInLayer, currentInputSize, activationFunction, layerIndex++, learningRate) );
 		currentInputSize = neuronsInLayer;
 	}
 }
@@ -75,7 +100,7 @@ std::vector<double> MLP::Backward(std::vector<double> correctOutputs, std::vecto
 
 	// atualizando a ultima camada
 	std::vector<double> InputForLastLayer  =  (layerIndex-1 < 0) ? inputs : _layers[layerIndex-1].LayerOutputs();
-	std::vector<double> errors = _layers[layerIndex--].UpdateLastLayerNeurons(correctOutputs, InputForLastLayer);
+	_lastLayerErrors = _layers[layerIndex--].UpdateLastLayerNeurons(correctOutputs, InputForLastLayer);
 
 
 	// atualiza as outras camadas
@@ -90,28 +115,54 @@ std::vector<double> MLP::Backward(std::vector<double> correctOutputs, std::vecto
 
 
 	// atualiza a primeira camada
+	//std::cout << "\n\n-------------------------------------------------\n";
 	int neuronsInCurrentLayer  =  _layers[0].NumberOfNeurons();
 	std::vector<double> accumulatedPropagatedErrors  =  _layers[layerIndex+1].AccumulatedPropagatedErrorByPreviousLayer(neuronsInCurrentLayer);
 	_layers[0].UpdateHiddenLayerNeurons(accumulatedPropagatedErrors, inputs);
 
 
-	///----------------
+
+
+
+	///-------------------------------
 	/// apagar isso
-	///----------------
+	///-------------------------------
+	
+	/*
+	std::cout << "\n\n first layer U and gradient\n";
+	for (auto neuron : _layers[0].Neurons()) {
+		std::cout << "U: " << neuron.U() << "  ;  gradient: " << neuron.Gradient()  << "\n\n";
+	}
 	
 	
 	std::vector<double> fistLayerInputGradient  =  _layers[0].AccumulatedPropagatedErrorByPreviousLayer(inputs.size());
 	
+	size_t gradientIndex = 0;
 
-	std::cout << "backward - output\n";
+
+	std::cout << "\n\nfistLayerInputGradient\n";
 	for (auto o : fistLayerInputGradient) { std::cout << o << "  "; }
-	
+
+	for (auto input : inputs) {
+		double du  =  _activationFunction->df(input);
+		fistLayerInputGradient[gradientIndex++]  =  fistLayerInputGradient[gradientIndex] * du;
+	}
 
 
-	///----------------
+	std::cout << "\n\nbackward - modified output\n";
+	for (auto o : fistLayerInputGradient) { std::cout << o << "  "; }
+	*/
 
 
-	return errors;
+	///-------------------------------
+	// return _lastLayerErrors;
+
+
+
+
+	std::vector<double> fistLayerInputGradient  =  _layers[0].AccumulatedPropagatedErrorByPreviousLayer(inputs.size());
+
+	return fistLayerInputGradient;
 }
 
 
@@ -328,6 +379,13 @@ std::vector<double> MLP::EvaluateInputs(std::vector<double> inputs)
 
 
 
+std::vector<double> MLP::Errors()
+{
+	return _lastLayerErrors;
+}
+
+
+
 void MLP::LoadFromJson(const Json& j)
 {
 	std::vector<size_t> architecture = j["architecture"].get<std::vector<size_t>>();
@@ -338,7 +396,7 @@ void MLP::LoadFromJson(const Json& j)
 	IActivationFunction* actFunc = StringToActivationFunction(funcName);
 
 	// MLP::MLP(std::vector<size_t> mlpArchitecture, size_t inputSize, IActivationFunction* activationFunction, double learningRate)
-	(*this) = MLP(architecture, inputSize, actFunc, learningRate);
+	(*this) = MLP(inputSize, architecture, actFunc, learningRate);
 
 	int layerIndex = 0;
 	int neuronIndex = 0;
