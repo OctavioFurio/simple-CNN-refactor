@@ -34,6 +34,7 @@ class ConvolutionLayer {
 		static Eigen::MatrixXd Convolution2D(Eigen::MatrixXd& input, Eigen::MatrixXd& kernel);
 		static Eigen::MatrixXd Convolution2D(Eigen::MatrixXd& input, Eigen::MatrixXd& kernel, int padding);
 		static Eigen::MatrixXd Convolution2D(Eigen::MatrixXd& input, Eigen::MatrixXd& kernel, int rowPadding, int colParing);
+		static Eigen::MatrixXd Convolution2DWithVisualization(Eigen::MatrixXd& input, Eigen::MatrixXd& kernel);
 
 		Eigen::MatrixXd Kernel();
 

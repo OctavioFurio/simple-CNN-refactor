@@ -13,6 +13,10 @@ CNN::CNN(
 	, double learningRate
 ) {
 
+	_maxEphocs = 50000000;
+	_minError = -1.0;
+	_errorEnergy = -1.0;
+
 	_processLayers = processLayers;
 	_learningRate = learningRate;
 
@@ -154,3 +158,144 @@ std::ostream& operator<<(std::ostream& os, CNN cnn)
 	return os;
 }
 
+
+
+void CNN::Training(std::vector<CnnTrainingData> trainigSet)
+{
+	size_t ephocs = 0;
+	double errors = 1000000.0;
+	double errorEnergy = 1000000.0;
+	int trainingSetLenght = trainigSet.size();
+
+	std::vector<double> _lastLayerErrors;
+
+	while (ephocs <= _maxEphocs  &&  errors > _minError  && errorEnergy > _errorEnergy) {
+
+		for (int i = 0; i < trainingSetLenght; i++) {
+			Eigen::MatrixXd inputs  =  trainigSet[i].first;
+			std::vector<double> labels  =  trainigSet[i].second;
+
+
+			std::vector<double> lastLayaerOutput = Forward(inputs);
+			_lastLayerErrors = Backward(labels, inputs);
+		}
+
+		//---------------------------
+		// criterios de parada
+		//---------------------------
+		errors = 0.0;
+		errorEnergy = 0.0;
+
+		for (auto& e : _lastLayerErrors) { errors += std::abs(e);  errorEnergy += e * e; }
+
+		errors = errors / _mlp._layers[_mlp._layersSize-1].NumberOfNeurons();
+		errorEnergy = errorEnergy / 2.0;
+
+		ephocs++;
+	}
+}
+
+
+
+void CNN::Training(std::vector<CnnData> dataSet, std::function<std::vector<double>(int)> ParseLabelIndexToLastLayerOutput)
+{
+	int numberOfNeuronInLastLayer = _mlp._layers[_mlp._layers.size()-1].NumberOfNeurons();
+
+	std::vector<CnnTrainingData> trainigSet;
+
+	for (auto& t : dataSet) {
+		std::vector<double> correctLastLayerOutputs = ParseLabelIndexToLastLayerOutput(t.labelIndex);
+
+		assert(correctLastLayerOutputs.size() == numberOfNeuronInLastLayer);
+
+		trainigSet.push_back({ t.inputs, correctLastLayerOutputs });
+	}
+
+	Training(trainigSet);
+}
+
+
+
+void CNN::Training(std::vector<CnnTrainingData> trainigSet, int callbackExecutionPeriod, std::function<void(void)> callback)
+{
+	size_t ephocs = 0;
+	double errors = 1000000.0;
+	double errorEnergy = 1000000.0;
+	int trainingSetLenght = trainigSet.size();
+	int minimalChangesCounter = 0;
+
+	std::vector<double> _lastLayerErrors;
+
+
+	while (ephocs <= _maxEphocs  &&  errors > _minError  && errorEnergy > _errorEnergy  &&  minimalChangesCounter != 2000) {
+
+		for (int i = 0; i < trainingSetLenght; i++) {
+			Eigen::MatrixXd inputs  =  trainigSet[i].first;
+			std::vector<double> labels  =  trainigSet[i].second;
+			
+
+			std::vector<double> lastLayaerOutput = Forward(inputs);
+			_lastLayerErrors = Backward(labels, inputs);
+		}
+
+
+		//// ------------------
+		//// coloque seu calback aqui
+		//// ------------------
+
+		if (ephocs % callbackExecutionPeriod == 0) { callback(); }
+
+		//// ------------------
+
+		double currentErrors = 0.0;
+		errorEnergy = 0.0;
+
+		for (auto& e : _lastLayerErrors) { currentErrors += std::abs(e);  errorEnergy += e * e; }
+
+		currentErrors = currentErrors / _mlp._layers[_mlp._layersSize-1].NumberOfNeurons();
+		errorEnergy = errorEnergy / 2.0;
+
+		if (std::abs(errors - currentErrors) < 1.0e-10) { minimalChangesCounter++; } else { minimalChangesCounter = 0; }
+
+		errors = currentErrors;
+
+		ephocs++;
+	}
+}
+
+
+
+void CNN::Training(
+	std::vector<CnnData> dataSet
+	, int callbackExecutionPeriod
+	, std::function<std::vector<double>(int)> ParseLabelIndexToLastLayerOutput
+	, std::function<void(void)> callback
+){
+	int numberOfNeuronInLastLayer = _mlp._layers[_mlp._layers.size()-1].NumberOfNeurons();
+
+	std::vector<CnnTrainingData> trainigSet;
+	for (auto& t : dataSet) {
+		std::vector<double> correctLastLayerOutputs = ParseLabelIndexToLastLayerOutput(t.labelIndex);
+
+		assert(correctLastLayerOutputs.size() == numberOfNeuronInLastLayer);
+
+		trainigSet.push_back({ t.inputs, correctLastLayerOutputs });
+	}
+
+	Training(trainigSet, callbackExecutionPeriod, callback);
+}
+
+
+
+void CNN::MaxAcceptableError(double error)
+{
+	_minError = error;
+}
+
+
+
+std::vector<double> CNN::ProcessInput(Eigen::MatrixXd input)
+{
+	std::vector<double> givenOutputFromLastLayer = Forward(input);
+	return givenOutputFromLastLayer;
+}

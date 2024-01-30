@@ -160,6 +160,34 @@ Eigen::MatrixXd ConvolutionLayer::Convolution2D(Eigen::MatrixXd& input, Eigen::M
 
 
 
+Eigen::MatrixXd ConvolutionLayer::Convolution2DWithVisualization(Eigen::MatrixXd& input, Eigen::MatrixXd& kernel)
+{
+    const int kernelRows = kernel.rows();
+    const int kernelCols = kernel.cols();
+    const int rows = (input.rows() - kernelRows) + 1;
+    const int cols = (input.cols() - kernelCols) + 1;
+
+    Eigen::MatrixXd result = Eigen::MatrixXd::Zero(rows, cols);
+    cv::Mat mat  =  cv::Mat(rows, cols, CV_8UC1);
+
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            double sum = input.block(i, j, kernelRows, kernelCols).cwiseProduct(kernel).sum();
+            result(i, j) = sum;
+             
+            mat.at<uchar>(i, j)  =  (uchar)(sum * 255);
+
+            cv::namedWindow("teste-1", cv::WINDOW_NORMAL);
+            cv::imshow("teste-1", mat);
+            cv::waitKey(2);
+        }
+    }
+
+    return result;
+}
+
+
+
 Eigen::MatrixXd ConvolutionLayer::Kernel()
 {
     return _kernel;

@@ -10,7 +10,7 @@
 #include "process-layer.h"
 #include "multy-layer-perceptron.h"
 
-
+using CnnTrainingData = std::pair< Eigen::MatrixXd, std::vector<double> >;
 
 
 class CNN {
@@ -23,6 +23,10 @@ class CNN {
 		std::vector<double> _flattedMatrix;
 		size_t _reshapeRows;
 		size_t _reshapeCols;
+
+		size_t _maxEphocs;
+		double _minError;
+		double _errorEnergy;
 
 
 	public:
@@ -45,6 +49,24 @@ class CNN {
 		Eigen::MatrixXd Reshape(std::vector<double> gradients, size_t rows, size_t cols);
 
 		friend std::ostream& operator<<(std::ostream& os, CNN cnn);
+
+
+		void Training(std::vector<CnnTrainingData> trainigSet);
+		void Training(std::vector<CnnData> dataSet, std::function<std::vector<double>(int)> ParseLabelIndexToLastLayerOutput);
+
+		void Training(std::vector<CnnTrainingData> trainigSet, int callbackExecutionPeriod, std::function<void(void)> callback);
+
+		void Training(
+			std::vector<CnnData> trainigSet
+			, int callbackExecutionPeriod
+			, std::function<std::vector<double>(int)> ParseLabelIndexToLastLayerOutput
+			, std::function<void(void)> callback
+		);
+
+
+		void MaxAcceptableError(double error);
+
+		std::vector<double> ProcessInput(Eigen::MatrixXd input);
 
 };
 

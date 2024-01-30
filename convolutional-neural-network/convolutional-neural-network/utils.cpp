@@ -28,10 +28,11 @@ cv::Mat Utils::MatrixToImage(Eigen::MatrixXd matrix)
         for (int j = 0; j < matrix.cols(); j++) {
             uchar pixel = (uchar) (std::abs(matrix(i, j)) * 255.0);
             mat.at<uchar>(i, j)  =  pixel;
+
         }
     }
 
-    std::cout << "\n\n\n" << matrix << "\n\n\n";
+    //std::cout << "\n\n\n" << matrix << "\n\n\n";
 
     return mat;
 }
