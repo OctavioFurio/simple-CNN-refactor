@@ -145,13 +145,16 @@ Eigen::MatrixXd CNN::Reshape(std::vector<double> gradients, size_t rows, size_t 
 
 std::ostream& operator<<(std::ostream& os, CNN cnn)
 {
-	for (auto l : cnn._processLayers) {
-		os << "\n\n" << l.Kernel() << "\n";
+	std::cout << "\n\n\n-------------------------------------------------------------------------\n";
+	for (auto& l : cnn._processLayers) {
+
+		os << "\n\nkernel: \n" << l.Kernel() << "\n\n";
+		os << "\n\ngradient: \n" << l.Gradient() << "\n\n";
 	}
 
 	std::vector<double> errors = cnn._mlp.Errors();
 
-	double meanError = std::accumulate(errors.begin(), errors.end(), 0.0, [](double a, double b) { return std::abs(b); }) / errors.size();
+	double meanError = std::accumulate(errors.begin(), errors.end(), 0.0, [](double a, double b) { return a += std::abs(b); }) / errors.size();
 
 	os << "\n\nERRORS:  " << meanError << "\n";
 

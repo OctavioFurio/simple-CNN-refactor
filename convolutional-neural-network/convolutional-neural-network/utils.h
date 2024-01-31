@@ -34,6 +34,12 @@ namespace Utils {
 
 	void StoreMatrixByForce(Eigen::MatrixXd* a, Eigen::MatrixXd b);
 
+	std::vector<std::string> SplitString(const std::string& input, const std::string& delimiter);
+
+	Eigen::MatrixXd ReshapeMatrix(std::vector<double> gradients, size_t rows, size_t cols);
+	std::vector<double> FlatMatrix(Eigen::MatrixXd input);
+	
+	Eigen::MatrixXd BatchNormalization(Eigen::MatrixXd mat);
 }
 
 

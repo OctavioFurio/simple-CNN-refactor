@@ -38,6 +38,8 @@ class ConvolutionLayer {
 
 		Eigen::MatrixXd Kernel();
 
+		Eigen::MatrixXd Gradient();
+
 		//Eigen::MatrixXd Output();
 
 };

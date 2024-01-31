@@ -31,11 +31,14 @@ ProcessLayer::~ProcessLayer()
 
 Eigen::MatrixXd ProcessLayer::CalculateConvolution(Eigen::MatrixXd input)
 {
+    std::vector<double> flattedIncomeInput = Utils::FlatMatrix(input);
+    std::vector<double> normalizedIncomeInput = Utils::BatchNormalization(flattedIncomeInput);
+    input  =  Utils::ReshapeMatrix(normalizedIncomeInput, input.rows(), input.cols());
+
     // por que nao armazena
-    Eigen::MatrixXd& concolvedMatrix  =  _convolutionLayer.CalculateConvolution(input);
+    Eigen::MatrixXd concolvedMatrix  =  _convolutionLayer.CalculateConvolution(input);
 
-    _convolutionOutput  =  concolvedMatrix;
-
+    _convolutionOutput  =  Eigen::MatrixXd(concolvedMatrix);
 
     return _convolutionOutput;
 }
@@ -47,7 +50,6 @@ Eigen::MatrixXd ProcessLayer::CalculateConvolution(cv::Mat image)
     Eigen::MatrixXd input  =  Utils::ImageToMatrix( image );
 
     Eigen::MatrixXd& concolvedMatrix  =  _convolutionLayer.CalculateConvolution( input );
-
     _convolutionOutput  =  concolvedMatrix;
 
     return _convolutionOutput;
@@ -143,6 +145,13 @@ int ProcessLayer::PoolingCols()
 Eigen::MatrixXd ProcessLayer::Kernel()
 {
     return _convolutionLayer.Kernel();
+}
+
+
+
+Eigen::MatrixXd ProcessLayer::Gradient()
+{
+    return _convolutionLayer.Gradient();
 }
 
 

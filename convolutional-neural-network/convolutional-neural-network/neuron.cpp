@@ -61,12 +61,12 @@ double Neuron::CalculateOutput(std::vector<double> inputs)
 // weight[j] = weight[j] + learningRate * ( d - y ) * input[j];
 double Neuron::CalculateError(double correctValue)
 {
-    double error = correctValue - _output;
+    _error = correctValue - _output;
     double du = activationFunction->df(_u);
 
-    _gradient = error * du;
+    _gradient = _error * du;
 
-    return error;
+    return _error;
 }
 
 
@@ -76,11 +76,7 @@ double Neuron::CalculateError(double correctValue)
 double Neuron::CalculateGradient(double accumulatedPropagatedError)
 {
     double du = activationFunction->df(_u);
-
     _gradient  =  accumulatedPropagatedError * du;
-
-    //std::cout << "[" << accumulatedPropagatedError << " ; " << du << "]   ";
-
     return _gradient;
 }
 

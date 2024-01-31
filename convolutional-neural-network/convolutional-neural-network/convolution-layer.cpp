@@ -73,6 +73,12 @@ Eigen::MatrixXd ConvolutionLayer::CalculateConvolution(cv::Mat& image)
 
 Eigen::MatrixXd ConvolutionLayer::Backward(Eigen::MatrixXd& input, Eigen::MatrixXd& incomeGradient, double learningRate)
 {
+    // normalize inputs
+    std::vector<double> flattedIncomeGradient = Utils::FlatMatrix(input);
+    std::vector<double> normalizedIncomeGradient = Utils::BatchNormalization(flattedIncomeGradient);
+    input  =  Utils::ReshapeMatrix(normalizedIncomeGradient, input.rows(), input.cols());
+
+
     // calcular o dE/dX (derivada parcial da funcao custo com relacao a entrada) usado para atualizar a proxima camada
     Eigen::MatrixXd flippedMatrix  =  Utils::FlipMatrixBy180Degree(_kernel);
     Eigen::MatrixXd gradientOfLostWithRespctToInput  =  Convolution2D(incomeGradient, flippedMatrix, flippedMatrix.rows()-1, flippedMatrix.cols()-1);
@@ -82,7 +88,10 @@ Eigen::MatrixXd ConvolutionLayer::Backward(Eigen::MatrixXd& input, Eigen::Matrix
     _gradient = Convolution2D(input, incomeGradient);
     _kernel = _kernel - learningRate * _gradient;
 
-    std::cout << "_gradient:\n" << _gradient << "\n\n\n";
+    // normalize kernel
+    std::vector<double> flattedKernel = Utils::FlatMatrix(_kernel);
+    std::vector<double> normalizedKernel = Utils::BatchNormalization(flattedKernel);
+    _kernel  =  Utils::ReshapeMatrix(normalizedKernel, _kernel.rows(), _kernel.cols());
 
 
     return gradientOfLostWithRespctToInput;
@@ -191,4 +200,11 @@ Eigen::MatrixXd ConvolutionLayer::Convolution2DWithVisualization(Eigen::MatrixXd
 Eigen::MatrixXd ConvolutionLayer::Kernel()
 {
     return _kernel;
+}
+
+
+
+Eigen::MatrixXd ConvolutionLayer::Gradient()
+{
+    return _gradient;
 }

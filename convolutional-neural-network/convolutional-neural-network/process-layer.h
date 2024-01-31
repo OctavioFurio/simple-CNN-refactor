@@ -58,6 +58,8 @@ class ProcessLayer {
 
 		Eigen::MatrixXd Kernel();
 
+		Eigen::MatrixXd Gradient();
+
 
 };
 

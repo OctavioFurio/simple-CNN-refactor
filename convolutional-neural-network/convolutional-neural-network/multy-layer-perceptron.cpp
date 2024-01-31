@@ -115,50 +115,9 @@ std::vector<double> MLP::Backward(std::vector<double> correctOutputs, std::vecto
 
 
 	// atualiza a primeira camada
-	//std::cout << "\n\n-------------------------------------------------\n";
 	int neuronsInCurrentLayer  =  _layers[0].NumberOfNeurons();
 	std::vector<double> accumulatedPropagatedErrors  =  _layers[layerIndex+1].AccumulatedPropagatedErrorByPreviousLayer(neuronsInCurrentLayer);
 	_layers[0].UpdateHiddenLayerNeurons(accumulatedPropagatedErrors, inputs);
-
-
-
-
-
-	///-------------------------------
-	/// apagar isso
-	///-------------------------------
-	
-	/*
-	std::cout << "\n\n first layer U and gradient\n";
-	for (auto neuron : _layers[0].Neurons()) {
-		std::cout << "U: " << neuron.U() << "  ;  gradient: " << neuron.Gradient()  << "\n\n";
-	}
-	
-	
-	std::vector<double> fistLayerInputGradient  =  _layers[0].AccumulatedPropagatedErrorByPreviousLayer(inputs.size());
-	
-	size_t gradientIndex = 0;
-
-
-	std::cout << "\n\nfistLayerInputGradient\n";
-	for (auto o : fistLayerInputGradient) { std::cout << o << "  "; }
-
-	for (auto input : inputs) {
-		double du  =  _activationFunction->df(input);
-		fistLayerInputGradient[gradientIndex++]  =  fistLayerInputGradient[gradientIndex] * du;
-	}
-
-
-	std::cout << "\n\nbackward - modified output\n";
-	for (auto o : fistLayerInputGradient) { std::cout << o << "  "; }
-	*/
-
-
-	///-------------------------------
-	// return _lastLayerErrors;
-
-
-
 
 	std::vector<double> fistLayerInputGradient  =  _layers[0].AccumulatedPropagatedErrorByPreviousLayer(inputs.size());
 
@@ -185,7 +144,7 @@ void MLP::Training(std::vector<TrainigData> trainigSet)
 			inputs.insert(inputs.begin(), 1.0);
 
 			std::vector<double> lastLayaerOutput = Forward(inputs);
-			_lastLayerErrors = Backward(labels, inputs);
+			Backward(labels, inputs);
 		}
 
 		//---------------------------
@@ -224,7 +183,7 @@ void MLP::Training(std::vector<TrainigData> trainigSet, int callbackExecutionPer
 			inputs.insert(inputs.begin(), 1.0);                                     // <-- 1.0 que sera multiplicado pelo bias no produto vetorial
 
 			std::vector<double> lastLayaerOutput = Forward(inputs);
-			_lastLayerErrors = Backward(labels, inputs);
+			Backward(labels, inputs);
 		}
 
 
@@ -466,11 +425,11 @@ std::ostream& operator<<(std::ostream& os, MLP mlp)
 {
 	int layerIndex = 0;
 	
-	for (auto& layer : mlp._layers) {
+	/*for (auto& layer : mlp._layers) {
 		std::cout << "LAYER: " << layerIndex << "\n";
 		std::cout << layer << "\n\n";
 		layerIndex++;
-	}
+	}*/
 
 	std::cout << "\n\nERRORS:\n";
 	double meanError = 0.0;
