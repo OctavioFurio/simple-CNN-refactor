@@ -27,6 +27,7 @@ class CNN {
 		size_t _maxEphocs;
 		double _minError;
 		double _errorEnergy;
+		double _error;
 
 
 	public:
@@ -67,6 +68,8 @@ class CNN {
 		void MaxAcceptableError(double error);
 
 		std::vector<double> ProcessInput(Eigen::MatrixXd input);
+
+		const double Error();
 
 };
 

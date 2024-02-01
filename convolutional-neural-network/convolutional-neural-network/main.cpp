@@ -1,6 +1,8 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <filesystem>
+#include <algorithm>
+#include <random>
 #include "multy-layer-perceptron.h"
 #include "convolutional-neural-network.h"
 
@@ -10,7 +12,7 @@
 int main(int argc, const char** argv)
 {
     /*
-    cv::Mat image  =  cv::imread("..\\..\\.resources\\humano.png", cv::IMREAD_GRAYSCALE);
+    cv::Mat image  =  cv::imread("..\\..\\.resources\\train-debug\\0_1.jpg", cv::IMREAD_GRAYSCALE);
     //cv::resize(image, image, cv::Size(image.rows/2, image.cols/2));
 
     Eigen::MatrixXd matImg  =  Utils::ImageToMatrix(image);
@@ -25,9 +27,9 @@ int main(int argc, const char** argv)
     Eigen::MatrixXd kernel = Eigen::MatrixXd(3,3);
 
     kernel <<
-        -0.966693, 0.80592, 1.3318,
-        -1.21571, -0.103154, 0.932901,
-        -1.68498, 0.30971, 0.590206;
+        2.04057, 0.590347, 0.0413314,
+        0.359109, 0.533219, -0.765308,
+        -0.238768, -1.00479, -1.55571;
 
     // std::vector<double> flatKernel = Utils::FlatMatrix(kernel);
     // std::vector<double> normKernel = Utils::BatchNormalization(flatKernel);
@@ -66,7 +68,7 @@ int main(int argc, const char** argv)
     */
 
     /*
-    cv::Mat image  =  cv::imread("..\\..\\.resources\\humano.png", cv::IMREAD_GRAYSCALE);
+    cv::Mat image  =  cv::imread("..\\..\\.resources\\train-debug\\humano.png", cv::IMREAD_GRAYSCALE);
     Eigen::MatrixXd input  =  Utils::ImageToMatrix(image);
 
 
@@ -137,9 +139,7 @@ int main(int argc, const char** argv)
 
 
 
-    
-    cv::Mat image  =  cv::imread("..\\..\\.resources\\humano.png", cv::IMREAD_GRAYSCALE);
-    Eigen::MatrixXd input  =  Utils::ImageToMatrix(image);
+   
 
 
     auto LoadData = [](const std::string& folderPath)->std::vector<CnnData> {
@@ -159,12 +159,18 @@ int main(int argc, const char** argv)
             }
         }
 
+        std::random_device rd;
+        std::mt19937 g(rd());
+
+        std::shuffle(set.begin(), set.end(), g);
+        for (auto o : set) { std::cout << o.labelIndex << "  "; }
+
         return set;
     };
 
     std::vector<CnnData> trainigSet = LoadData("..\\..\\.resources\\train-debug");
 
-    //std::vector<CnnData> testingSet ={ }; //
+    //std::vector<CnnData> testingSet = { }; //
 
     Eigen::MatrixXd kernel  =  Eigen::MatrixXd::Ones(3, 3);
 
@@ -177,8 +183,10 @@ int main(int argc, const char** argv)
 
     CNN cnn = CNN(28, 28, processLayer, { 50, 10 }, new Tanh (), 0.03);
 
+    cnn.MaxAcceptableError(0.005);
+
     cnn.Training(trainigSet,
-                 1000,
+                 10,
                  [](int label) -> std::vector<double> {
                      std::vector<double> correctOutput = std::vector<double>((size_t)10, 0.0);
                      correctOutput[label] = 1.0;
@@ -204,6 +212,41 @@ int main(int argc, const char** argv)
     );
     
 
+    Eigen::MatrixXd confusionMatrix = Eigen::MatrixXd::Zero(10, 10);
+    int totalData = 0;
+    int errors = 0;
+
+
+    for (const auto& entry : std::filesystem::directory_iterator("..\\..\\.resources\\train-debug")) {
+        if (std::filesystem::is_regular_file(entry.path())) {
+
+            std::string fileName = entry.path().filename().string();
+            std::string labelStr = Utils::SplitString(fileName, "_")[0];
+            int label = std::stoi(labelStr);
+
+            std::string fullPathName = entry.path().string();
+            Eigen::MatrixXd input = Utils::ImageToMatrix(cv::imread(fullPathName));
+
+
+            std::vector<double> givenOutput = cnn.ProcessInput( input );
+
+            auto it = std::max_element(givenOutput.begin(), givenOutput.end());
+            int givenLabel = std::distance(givenOutput.begin(), it);
+
+            confusionMatrix(givenLabel, label) += 1.0;
+
+            totalData++;
+
+            if (givenLabel != label) { errors++; }
+        }
+    }
+
+
+    std::cout << "\n\n\n\n\n\n";
+
+    double accuracy = 1.0 - ((double)errors/totalData);
+    std::cout << "accuracy: " << accuracy << "\n\n";
+    std::cout << confusionMatrix << "\n\n";
 
 
 

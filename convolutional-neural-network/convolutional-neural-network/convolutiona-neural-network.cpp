@@ -13,7 +13,7 @@ CNN::CNN(
 	, double learningRate
 ) {
 
-	_maxEphocs = 50000000;
+	_maxEphocs = 50000;
 	_minError = -1.0;
 	_errorEnergy = -1.0;
 
@@ -145,18 +145,18 @@ Eigen::MatrixXd CNN::Reshape(std::vector<double> gradients, size_t rows, size_t 
 
 std::ostream& operator<<(std::ostream& os, CNN cnn)
 {
-	std::cout << "\n\n\n-------------------------------------------------------------------------\n";
-	for (auto& l : cnn._processLayers) {
+	//std::cout << "\n\n\n-------------------------------------------------------------------------\n";
+	//for (auto& l : cnn._processLayers) {
+	//
+	//	os << "\n\nkernel: \n" << l.Kernel() << "\n\n";
+	//	os << "\n\ngradient: \n" << l.Gradient() << "\n\n";
+	//}
+	//
+	//std::vector<double> errors = cnn._mlp.Errors();
+	//
+	//double meanError = std::accumulate(errors.begin(), errors.end(), 0.0, [](double a, double b) { return a += std::abs(b); }) / errors.size();
 
-		os << "\n\nkernel: \n" << l.Kernel() << "\n\n";
-		os << "\n\ngradient: \n" << l.Gradient() << "\n\n";
-	}
-
-	std::vector<double> errors = cnn._mlp.Errors();
-
-	double meanError = std::accumulate(errors.begin(), errors.end(), 0.0, [](double a, double b) { return a += std::abs(b); }) / errors.size();
-
-	os << "\n\nERRORS:  " << meanError << "\n";
+	os << "\n\nERRORS:  " << cnn._error << "\n";
 
 	return os;
 }
@@ -222,15 +222,17 @@ void CNN::Training(std::vector<CnnData> dataSet, std::function<std::vector<doubl
 void CNN::Training(std::vector<CnnTrainingData> trainigSet, int callbackExecutionPeriod, std::function<void(void)> callback)
 {
 	size_t ephocs = 0;
-	double errors = 1000000.0;
-	double errorEnergy = 1000000.0;
+	double errors = 100.0;
+	double errorEnergy = 100.0;
 	int trainingSetLenght = trainigSet.size();
 	int minimalChangesCounter = 0;
 
 	std::vector<double> _lastLayerErrors;
 
 
-	while (ephocs <= _maxEphocs  &&  errors > _minError  && errorEnergy > _errorEnergy  &&  minimalChangesCounter != 2000) {
+	while (ephocs <= _maxEphocs  &&  errors > _minError  &&  minimalChangesCounter != 20) {
+
+		double iterationError = 0.0;
 
 		for (int i = 0; i < trainingSetLenght; i++) {
 			Eigen::MatrixXd inputs  =  trainigSet[i].first;
@@ -239,6 +241,9 @@ void CNN::Training(std::vector<CnnTrainingData> trainigSet, int callbackExecutio
 
 			std::vector<double> lastLayaerOutput = Forward(inputs);
 			_lastLayerErrors = Backward(labels, inputs);
+			
+
+			iterationError  +=  ( std::accumulate( _lastLayerErrors.begin(), _lastLayerErrors.end(), 0.0, [](double acc, double val) { return acc + std::abs(val); }) / _lastLayerErrors.size());
 		}
 
 
@@ -249,6 +254,11 @@ void CNN::Training(std::vector<CnnTrainingData> trainigSet, int callbackExecutio
 		if (ephocs % callbackExecutionPeriod == 0) { callback(); }
 
 		//// ------------------
+		
+
+		_error = iterationError / trainingSetLenght;
+		//double currentErrors = iterationError / trainingSetLenght;
+
 
 		double currentErrors = 0.0;
 		errorEnergy = 0.0;
@@ -261,6 +271,7 @@ void CNN::Training(std::vector<CnnTrainingData> trainigSet, int callbackExecutio
 		if (std::abs(errors - currentErrors) < 1.0e-10) { minimalChangesCounter++; } else { minimalChangesCounter = 0; }
 
 		errors = currentErrors;
+		
 
 		ephocs++;
 	}
@@ -301,4 +312,9 @@ std::vector<double> CNN::ProcessInput(Eigen::MatrixXd input)
 {
 	std::vector<double> givenOutputFromLastLayer = Forward(input);
 	return givenOutputFromLastLayer;
+}
+
+const double CNN::Error()
+{
+	return _error;
 }
