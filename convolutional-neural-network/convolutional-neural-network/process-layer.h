@@ -19,9 +19,6 @@ using Matrix = Eigen::MatrixXd;
 class ProcessLayer {
 
 	private:
-		//Eigen::MatrixXd _convolutionOutput;
-		//Eigen::MatrixXd _poolingOutput;
-
 		ConvolutionLayer _convolutionLayer;
 		IActivationFunction* _activationFunction;
 		IPooling* _poolingLayer;
@@ -37,7 +34,7 @@ class ProcessLayer {
 
 		Eigen::MatrixXd CalculateConvolution(Eigen::MatrixXd input);
 		Eigen::MatrixXd CalculateConvolution(cv::Mat image);
-		Eigen::MatrixXd ConvolutionBackward(Eigen::MatrixXd& input, Eigen::MatrixXd& incomeGradient, double learningRate = 0.03);
+		Eigen::MatrixXd ConvolutionBackward(Eigen::MatrixXd input, Eigen::MatrixXd incomeGradient, double learningRate = 0.003);
 
 		Eigen::MatrixXd ApplayActivationFunction(Eigen::MatrixXd input);
 
@@ -59,6 +56,8 @@ class ProcessLayer {
 		Eigen::MatrixXd Kernel();
 
 		Eigen::MatrixXd Gradient();
+
+		void NormalizeKernel();
 
 
 };

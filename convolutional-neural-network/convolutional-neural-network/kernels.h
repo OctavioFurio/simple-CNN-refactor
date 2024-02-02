@@ -13,6 +13,8 @@
 
 namespace Kernel3x3 {
 
+    
+
     Eigen::MatrixXd Ones(size_t row, size_t col);
 
     Eigen::MatrixXd Zero(size_t row, size_t col);

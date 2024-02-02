@@ -425,11 +425,11 @@ std::ostream& operator<<(std::ostream& os, MLP mlp)
 {
 	int layerIndex = 0;
 	
-	/*for (auto& layer : mlp._layers) {
+	for (auto& layer : mlp._layers) {
 		std::cout << "LAYER: " << layerIndex << "\n";
 		std::cout << layer << "\n\n";
 		layerIndex++;
-	}*/
+	}
 
 	std::cout << "\n\nERRORS:\n";
 	double meanError = 0.0;

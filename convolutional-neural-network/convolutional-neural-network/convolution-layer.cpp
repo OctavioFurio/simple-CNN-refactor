@@ -39,7 +39,7 @@ ConvolutionLayer::~ConvolutionLayer()
 
 
 
-Eigen::MatrixXd& ConvolutionLayer::CalculateConvolution(Eigen::MatrixXd& input)
+Eigen::MatrixXd ConvolutionLayer::CalculateConvolution(Eigen::MatrixXd input)
 {
     Eigen::MatrixXd convolutedInput;
 
@@ -54,7 +54,7 @@ Eigen::MatrixXd& ConvolutionLayer::CalculateConvolution(Eigen::MatrixXd& input)
 
 
 
-Eigen::MatrixXd ConvolutionLayer::CalculateConvolution(cv::Mat& image)
+Eigen::MatrixXd ConvolutionLayer::CalculateConvolution(cv::Mat image)
 {
     Eigen::MatrixXd input  = Utils::ImageToMatrix(image);
 
@@ -71,27 +71,22 @@ Eigen::MatrixXd ConvolutionLayer::CalculateConvolution(cv::Mat& image)
 
 
 
-Eigen::MatrixXd ConvolutionLayer::Backward(Eigen::MatrixXd& input, Eigen::MatrixXd& incomeGradient, double learningRate)
+Eigen::MatrixXd ConvolutionLayer::Backward(Eigen::MatrixXd input, Eigen::MatrixXd incomeGradient, double learningRate)
 {
-    // normalize inputs
-    std::vector<double> flattedIncomeGradient = Utils::FlatMatrix(input);
-    std::vector<double> normalizedIncomeGradient = Utils::BatchNormalization(flattedIncomeGradient);
-    input  =  Utils::ReshapeMatrix(normalizedIncomeGradient, input.rows(), input.cols());
-
 
     // calcular o dE/dX (derivada parcial da funcao custo com relacao a entrada) usado para atualizar a proxima camada
     Eigen::MatrixXd flippedMatrix  =  Utils::FlipMatrixBy180Degree(_kernel);
     Eigen::MatrixXd gradientOfLostWithRespctToInput  =  Convolution2D(incomeGradient, flippedMatrix, flippedMatrix.rows()-1, flippedMatrix.cols()-1);
 
 
-    // update kernel    (dE/dF)   -   updated after gradient Of Lost With Respct To Input was calculated
+    // update kernel    (dE/dF)     updated after gradient Of Lost With Respct To Input was calculated
     _gradient = Convolution2D(input, incomeGradient);
-    _kernel = _kernel - learningRate * _gradient;
+    _kernel = _kernel + learningRate * _gradient;
 
-    // normalize kernel
-    std::vector<double> flattedKernel = Utils::FlatMatrix(_kernel);
-    std::vector<double> normalizedKernel = Utils::BatchNormalization(flattedKernel);
-    _kernel  =  Utils::ReshapeMatrix(normalizedKernel, _kernel.rows(), _kernel.cols());
+    //std::cout << "\n\_gradient\n" << _gradient << "\n";
+    //std::cout << "\n\nkernel\n" << _kernel << "\n";
+    
+   
 
 
     return gradientOfLostWithRespctToInput;
@@ -99,8 +94,12 @@ Eigen::MatrixXd ConvolutionLayer::Backward(Eigen::MatrixXd& input, Eigen::Matrix
 
 
 
-Eigen::MatrixXd ConvolutionLayer::Convolution2D(Eigen::MatrixXd& input, Eigen::MatrixXd& kernel)
+Eigen::MatrixXd ConvolutionLayer::Convolution2D(Eigen::MatrixXd input, Eigen::MatrixXd kernel)
 {
+    //std::cout << "conv input:\n" << input << "\n\n";
+    //std::cout << "conv kernel:\n" << kernel << "\n\n";
+
+
     const int kernelRows = kernel.rows();
     const int kernelCols = kernel.cols();
     const int rows = (input.rows() - kernelRows) + 1;
@@ -112,15 +111,19 @@ Eigen::MatrixXd ConvolutionLayer::Convolution2D(Eigen::MatrixXd& input, Eigen::M
         for (int j = 0; j < cols; ++j) {
             double sum = input.block(i, j, kernelRows, kernelCols).cwiseProduct(kernel).sum();
             result(i, j) = sum;
+
+            //std::cout << "\n\n" << result << "\n\n";
         }
     }
+
+    //std::cout << "\n\n" << result << "\n\n";
 
     return result;
 }
 
 
 
-Eigen::MatrixXd ConvolutionLayer::Convolution2D(Eigen::MatrixXd& input, Eigen::MatrixXd& kernel, int padding)
+Eigen::MatrixXd ConvolutionLayer::Convolution2D(Eigen::MatrixXd input, Eigen::MatrixXd kernel, int padding)
 {
     int kernelRows = kernel.rows();
     int kernelCols = kernel.cols();
@@ -145,7 +148,7 @@ Eigen::MatrixXd ConvolutionLayer::Convolution2D(Eigen::MatrixXd& input, Eigen::M
 
 
 
-Eigen::MatrixXd ConvolutionLayer::Convolution2D(Eigen::MatrixXd& input, Eigen::MatrixXd& kernel, int rowPadding, int colPadding)
+Eigen::MatrixXd& ConvolutionLayer::Convolution2D(Eigen::MatrixXd input, Eigen::MatrixXd kernel, int rowPadding, int colPadding)
 {
     int kernelRows = kernel.rows();
     int kernelCols = kernel.cols();
@@ -207,4 +210,10 @@ Eigen::MatrixXd ConvolutionLayer::Kernel()
 Eigen::MatrixXd ConvolutionLayer::Gradient()
 {
     return _gradient;
+}
+
+void ConvolutionLayer::NormalizeKernel()
+{
+    Eigen::MatrixXd normalizedKernel = Utils::BatchNormalization(_kernel);
+    _kernel = normalizedKernel;
 }

@@ -49,7 +49,7 @@ Eigen::MatrixXd ProcessLayer::CalculateConvolution(cv::Mat image)
 {
     Eigen::MatrixXd input  =  Utils::ImageToMatrix( image );
 
-    Eigen::MatrixXd& concolvedMatrix  =  _convolutionLayer.CalculateConvolution( input );
+    Eigen::MatrixXd concolvedMatrix  =  _convolutionLayer.CalculateConvolution( input );
     _convolutionOutput  =  concolvedMatrix;
 
     return _convolutionOutput;
@@ -57,7 +57,7 @@ Eigen::MatrixXd ProcessLayer::CalculateConvolution(cv::Mat image)
 
 
 
-Eigen::MatrixXd ProcessLayer::ConvolutionBackward(Eigen::MatrixXd& input, Eigen::MatrixXd& incomeGradient, double learningRate)
+Eigen::MatrixXd ProcessLayer::ConvolutionBackward(Eigen::MatrixXd input, Eigen::MatrixXd incomeGradient, double learningRate)
 {
     Eigen::MatrixXd gradientOfLostWithRespctToInput = _convolutionLayer.Backward(input, incomeGradient, learningRate);
     return gradientOfLostWithRespctToInput;
@@ -147,11 +147,14 @@ Eigen::MatrixXd ProcessLayer::Kernel()
     return _convolutionLayer.Kernel();
 }
 
-
-
 Eigen::MatrixXd ProcessLayer::Gradient()
 {
     return _convolutionLayer.Gradient();
+}
+
+void ProcessLayer::NormalizeKernel()
+{
+    _convolutionLayer.NormalizeKernel();
 }
 
 

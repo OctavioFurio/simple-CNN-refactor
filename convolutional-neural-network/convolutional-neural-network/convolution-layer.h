@@ -28,20 +28,20 @@ class ConvolutionLayer {
 		ConvolutionLayer(std::vector<std::vector<double>> kernel, int padding = 0);
 		~ConvolutionLayer();
 
-		Eigen::MatrixXd& CalculateConvolution(Eigen::MatrixXd& input);
-		Eigen::MatrixXd CalculateConvolution(cv::Mat& image);
-		Eigen::MatrixXd Backward(Eigen::MatrixXd& input, Eigen::MatrixXd& incomeGradient, double learningRate = 0.03);
+		Eigen::MatrixXd CalculateConvolution(Eigen::MatrixXd input);
+		Eigen::MatrixXd CalculateConvolution(cv::Mat image);
+		Eigen::MatrixXd Backward(Eigen::MatrixXd input, Eigen::MatrixXd incomeGradient, double learningRate = 0.03);
 
-		static Eigen::MatrixXd Convolution2D(Eigen::MatrixXd& input, Eigen::MatrixXd& kernel);
-		static Eigen::MatrixXd Convolution2D(Eigen::MatrixXd& input, Eigen::MatrixXd& kernel, int padding);
-		static Eigen::MatrixXd Convolution2D(Eigen::MatrixXd& input, Eigen::MatrixXd& kernel, int rowPadding, int colParing);
+		static Eigen::MatrixXd Convolution2D(Eigen::MatrixXd input, Eigen::MatrixXd kernel);
+		static Eigen::MatrixXd Convolution2D(Eigen::MatrixXd input, Eigen::MatrixXd kernel, int padding);
+		static Eigen::MatrixXd& Convolution2D(Eigen::MatrixXd input, Eigen::MatrixXd kernel, int rowPadding, int colParing);
 		static Eigen::MatrixXd Convolution2DWithVisualization(Eigen::MatrixXd& input, Eigen::MatrixXd& kernel);
 
 		Eigen::MatrixXd Kernel();
 
 		Eigen::MatrixXd Gradient();
 
-		//Eigen::MatrixXd Output();
+		void NormalizeKernel();
 
 };
 

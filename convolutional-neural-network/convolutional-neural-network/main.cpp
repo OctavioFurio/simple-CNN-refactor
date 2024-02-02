@@ -201,12 +201,13 @@ int main(int argc, const char** argv)
 
     for (auto& s : Set) {
         std::vector<double> inputs = Utils::FlatMatrix(s.inputs);
+        inputs.insert(inputs.begin(), 1.0);
         trainigSet.push_back( {inputs, s.labelIndex } );
     }
 
     Eigen::MatrixXd kernel  =  Eigen::MatrixXd::Ones(3, 3);
 
-    MLP mlp = MLP(28*28, { 50, 10 }, new Tanh (), 0.03);
+    MLP mlp = MLP(28*28, { 70, 50, 10 }, new Tanh(), 0.03);
 
     mlp.Training(trainigSet,
                  10000,
@@ -230,17 +231,59 @@ int main(int argc, const char** argv)
                      std::cout << "given vector: \n";
                      for (auto o : givenOutput) { std::cout << o << "  "; }
 
-                     std::cout << "\n\n";
+                     std::cout << "\n\nt1";
                  }
     );
+    
+
+
+    Eigen::MatrixXd confusionMatrix = Eigen::MatrixXd::Zero(10, 10);
+    int totalData = 0;
+    int errors = 0;
+
+
+    for (const auto& entry : std::filesystem::directory_iterator("..\\..\\.resources\\train-debug")) {
+        if (std::filesystem::is_regular_file(entry.path())) {
+
+            std::string fileName = entry.path().filename().string();
+            std::string labelStr = Utils::SplitString(fileName, "_")[0];
+            int label = std::stoi(labelStr);
+
+            std::string fullPathName = entry.path().string();
+            Eigen::MatrixXd input = Utils::ImageToMatrix(cv::imread(fullPathName));
+
+
+            std::vector<double> inputs = Utils::FlatMatrix(input);
+            inputs.insert(inputs.begin(), 1.0);
+
+
+            std::vector<double> givenOutput = mlp.Forward(inputs);
+
+            auto it = std::max_element(givenOutput.begin(), givenOutput.end());
+            int givenLabel = std::distance(givenOutput.begin(), it);
+
+            confusionMatrix(givenLabel, label) += 1.0;
+
+            totalData++;
+
+            if (givenLabel != label) { errors++; }
+        }
+    }
+
+
+    std::cout << "\n\n\n\n\n\n";
+
+    double accuracy = 1.0 - ((double)errors/totalData);
+    std::cout << "accuracy: " << accuracy << "\n\n";
+    std::cout << confusionMatrix << "\n\n";
     */
-
-
 
 
     
     auto LoadData = [](const std::string& folderPath)->std::vector<CnnData> {
         std::vector<CnnData> set;
+
+        int l = -1;
 
         for (const auto& entry : std::filesystem::directory_iterator(folderPath)) {
             if (std::filesystem::is_regular_file(entry.path())) {
@@ -253,13 +296,15 @@ int main(int argc, const char** argv)
                 Eigen::MatrixXd input = Utils::ImageToMatrix( cv::imread(fullPathName) );
 
                 set.push_back( {input, label} );
+                
+                if (label > l) { l = label; std::cout << label << "\n"; }
+
             }
         }
 
         std::random_device rd;
         std::mt19937 g(rd());
         std::shuffle(set.begin(), set.end(), g);
-        for (auto o : set) { std::cout << o.labelIndex << "  "; }
 
         return set;
     };
@@ -268,30 +313,31 @@ int main(int argc, const char** argv)
 
     //std::vector<CnnData> testingSet = { }; //
 
-    Eigen::MatrixXd kernel  =  Eigen::MatrixXd(3, 3);
+    Eigen::MatrixXd kernel = Eigen::MatrixXd::Constant(7,7, 1.0/49.0);
 
     std::cout << "\n\n" << kernel << "\n\n\n";
 
-    kernel = Kernel3x3::RandomCloseToZero(3, 3);
 
     std::initializer_list<ProcessLayer> processLayer ={
-        ProcessLayer(kernel, 0, new ReLU(), new MaxPooling(2,2)),
+        ProcessLayer(kernel, 0, new ReLU(), new MaxPooling(3,3)),
         //ProcessLayer(kernel, 0, new ReLU(), new MaxPooling(2,2))
     };
 
 
     CNN cnn = CNN(28, 28, processLayer, { 50, 10 }, new Tanh (), 0.03);
 
-    cnn.MaxAcceptableError(0.005);
+    cnn.MaxAcceptableError(0.05);
+    cnn.LearningRate(0.003);
 
     cnn.Training(trainigSet,
-                 1000,
+                 100,
                  [](int label) -> std::vector<double> {
                      std::vector<double> correctOutput = std::vector<double>((size_t)10, 0.0);
                      correctOutput[label] = 1.0;
                      return correctOutput;
                  },
                  [&cnn, &trainigSet]() {
+                     std::cout << "\n-------------------------------------------------------\n\n";
                      std::cout << cnn << "\n";
 
                      size_t index = 0;
@@ -299,7 +345,6 @@ int main(int argc, const char** argv)
 
                      auto it = std::max_element(givenOutput.begin(), givenOutput.end());
                      int givenLabel = std::distance(givenOutput.begin(), it);
-
 
                      std::cout << "corrent output: " << trainigSet[index].labelIndex << "\n";
                      std::cout << "given output:   " << givenLabel << "\n";

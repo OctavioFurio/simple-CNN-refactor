@@ -11,9 +11,9 @@ Neuron::Neuron(size_t inputSize, IActivationFunction* actFun, double leraningRat
 
     _weights = std::vector<double>(_inputSize, 1.0);
 
-    /*for (auto& weight : _weights) {
+    for (auto& weight : _weights) {
         weight  =  RandomNormalDistributionvalue(-1.0, 1.0);
-    }*/
+    }
 }
 
 
@@ -58,13 +58,14 @@ double Neuron::CalculateOutput(std::vector<double> inputs)
 
 
 
-// weight[j] = weight[j] + learningRate * ( d - y ) * input[j];
+// weight[j] = weight[j] + learningRate * ( d - y ) * df(u) * input[j];
+// weight[j] = weight[j] + learningRate * 2( d - y ) * df(u) * input[j];
 double Neuron::CalculateError(double correctValue)
 {
     _error = correctValue - _output;
     double du = activationFunction->df(_u);
 
-    _gradient = _error * du;
+    _gradient = _error * du * 2.0;
 
     return _error;
 }

@@ -71,7 +71,11 @@ class CNN {
 
 		std::vector<double> ProcessInput(Eigen::MatrixXd input);
 
+		std::vector<ProcessLayer> ProcessLayers();
+
 		const double Error();
+
+		void LearningRate(double rate);
 
 };
 
