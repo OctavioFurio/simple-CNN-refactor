@@ -12,7 +12,7 @@
 int main(int argc, const char** argv)
 {
     /*
-    cv::Mat image  =  cv::imread("..\\..\\.resources\\train-debug\\0_1.jpg", cv::IMREAD_GRAYSCALE);
+    cv::Mat image  =  cv::imread("..\\..\\.resources\\humano-original.png", cv::IMREAD_GRAYSCALE);
     //cv::resize(image, image, cv::Size(image.rows/2, image.cols/2));
 
     Eigen::MatrixXd matImg  =  Utils::ImageToMatrix(image);
@@ -22,49 +22,149 @@ int main(int argc, const char** argv)
     cv::imshow("Original Imagem", image);
 
 
-
-
-    Eigen::MatrixXd kernel = Eigen::MatrixXd(3,3);
-
-    kernel <<
-        2.04057, 0.590347, 0.0413314,
-        0.359109, 0.533219, -0.765308,
-        -0.238768, -1.00479, -1.55571;
-
-    // std::vector<double> flatKernel = Utils::FlatMatrix(kernel);
-    // std::vector<double> normKernel = Utils::BatchNormalization(flatKernel);
-    // kernel = Utils::ReshapeMatrix(normKernel, kernel.rows(), kernel.cols());
-
-    // std::cout << kernel << "\n\n";
-
-
-    ProcessLayer convolutionLayer = ProcessLayer(kernel, 0 , new ReLU(), new MaxPooling(2, 2));
-
-
-    /// comvolution
+    ProcessLayer convolutionLayer = ProcessLayer(Kernel3x3::Identity(), 0, new ReLU(), new MaxPooling(2, 2));
     auto matrix  =  convolutionLayer.CalculateConvolution( matImg );
-    std::cout << "\n\n" << matrix << "\n\n";
     auto convolatedImage  =  Utils::MatrixToImage(matrix);
-
-    cv::namedWindow("convulated", cv::WINDOW_NORMAL);
-    cv::imshow("convulated", convolatedImage);
-
-
-    /// relu
-    auto matrixWithActFun  =  convolutionLayer.ApplayActivationFunction(matrix);
-    auto activatedImage  =  Utils::MatrixToImage(matrixWithActFun);
-
-    cv::namedWindow("activation function", cv::WINDOW_NORMAL);
-    cv::imshow("activation function", activatedImage);
+    cv::namedWindow("Identity", cv::WINDOW_NORMAL);
+    cv::imshow("Identity", convolatedImage);
 
 
+    convolutionLayer = ProcessLayer(Kernel3x3::AverageBlur(), 0, new ReLU(), new MaxPooling(2, 2));
+    matrix  =  convolutionLayer.CalculateConvolution(matImg);
+    convolatedImage  =  Utils::MatrixToImage(matrix);
+    cv::namedWindow("AverageBlur", cv::WINDOW_NORMAL);
+    cv::imshow("AverageBlur", convolatedImage);
 
-    /// pooling
-    auto matrixWithPooling  =  convolutionLayer.CalculatePooling(matrixWithActFun);
-    auto pooledImage  =  Utils::MatrixToImage(matrixWithPooling);
 
-    cv::namedWindow("pooling", cv::WINDOW_NORMAL);
-    cv::imshow("pooling", pooledImage);
+    convolutionLayer = ProcessLayer(Kernel3x3::EdgeEnhancement(), 0, new ReLU(), new MaxPooling(2, 2));
+    matrix  =  convolutionLayer.CalculateConvolution(matImg);
+    convolatedImage  =  Utils::MatrixToImage(matrix);
+    cv::namedWindow("EdgeEnhancement", cv::WINDOW_NORMAL);
+    cv::imshow("EdgeEnhancement", convolatedImage);
+
+
+    convolutionLayer = ProcessLayer(Kernel3x3::HorizontalLineDetection(), 0, new ReLU(), new MaxPooling(2, 2));
+    matrix  =  convolutionLayer.CalculateConvolution(matImg);
+    convolatedImage  =  Utils::MatrixToImage(matrix);
+    cv::namedWindow("HorizontalLineDetection", cv::WINDOW_NORMAL);
+    cv::imshow("HorizontalLineDetection", convolatedImage);
+
+
+    convolutionLayer = ProcessLayer(Kernel3x3::Laplacian(), 0, new ReLU(), new MaxPooling(2, 2));
+    matrix  =  convolutionLayer.CalculateConvolution(matImg);
+    convolatedImage  =  Utils::MatrixToImage(matrix);
+    cv::namedWindow("Laplacian", cv::WINDOW_NORMAL);
+    cv::imshow("Laplacian", convolatedImage);
+
+
+    convolutionLayer = ProcessLayer(Kernel3x3::VerticalLineDetection(), 0, new ReLU(), new MaxPooling(2, 2));
+    matrix  =  convolutionLayer.CalculateConvolution(matImg);
+    convolatedImage  =  Utils::MatrixToImage(matrix);
+    cv::namedWindow("VerticalLineDetection", cv::WINDOW_NORMAL);
+    cv::imshow("VerticalLineDetection", convolatedImage);
+
+
+
+
+    convolutionLayer = ProcessLayer(Kernel3x3::KrischCompassEast(), 0, new ReLU(), new MaxPooling(2, 2));
+    matrix  =  convolutionLayer.CalculateConvolution(matImg);
+    convolatedImage  =  Utils::MatrixToImage(matrix);
+    cv::namedWindow("KrischCompassEast", cv::WINDOW_NORMAL);
+    cv::imshow("KrischCompassEast", convolatedImage);
+  
+    convolutionLayer = ProcessLayer(Kernel3x3::KrischCompassNorth(), 0, new ReLU(), new MaxPooling(2, 2));
+    matrix  =  convolutionLayer.CalculateConvolution(matImg);
+    convolatedImage  =  Utils::MatrixToImage(matrix);
+    cv::namedWindow("KrischCompassNorth", cv::WINDOW_NORMAL);
+    cv::imshow("KrischCompassNorth", convolatedImage);
+
+    convolutionLayer = ProcessLayer(Kernel3x3::KrischCompassNorthEast(), 0, new ReLU(), new MaxPooling(2, 2));
+    matrix  =  convolutionLayer.CalculateConvolution(matImg);
+    convolatedImage  =  Utils::MatrixToImage(matrix);
+    cv::namedWindow("KrischCompassNorthEast", cv::WINDOW_NORMAL);
+    cv::imshow("KrischCompassNorthEast", convolatedImage);
+
+    convolutionLayer = ProcessLayer(Kernel3x3::KrischCompassNorthWest(), 0, new ReLU(), new MaxPooling(2, 2));
+    matrix  =  convolutionLayer.CalculateConvolution(matImg);
+    convolatedImage  =  Utils::MatrixToImage(matrix);
+    cv::namedWindow("KrischCompassNorthWest", cv::WINDOW_NORMAL);
+    cv::imshow("KrischCompassNorthWest", convolatedImage);
+
+    convolutionLayer = ProcessLayer(Kernel3x3::KrischCompassWest(), 0, new ReLU(), new MaxPooling(2, 2));
+    matrix  =  convolutionLayer.CalculateConvolution(matImg);
+    convolatedImage  =  Utils::MatrixToImage(matrix);
+    cv::namedWindow("KrischCompassWest", cv::WINDOW_NORMAL);
+    cv::imshow("KrischCompassWest", convolatedImage);
+
+    convolutionLayer = ProcessLayer(Kernel3x3::KrischCompassSouth(), 0, new ReLU(), new MaxPooling(2, 2));
+    matrix  =  convolutionLayer.CalculateConvolution(matImg);
+    convolatedImage  =  Utils::MatrixToImage(matrix);
+    cv::namedWindow("KrischCompassSouth", cv::WINDOW_NORMAL);
+    cv::imshow("KrischCompassSouth", convolatedImage);
+
+    convolutionLayer = ProcessLayer(Kernel3x3::KrischCompassSouthEast(), 0, new ReLU(), new MaxPooling(2, 2));
+    matrix  =  convolutionLayer.CalculateConvolution(matImg);
+    convolatedImage  =  Utils::MatrixToImage(matrix);
+    cv::namedWindow("KrischCompassNorthEast", cv::WINDOW_NORMAL);
+    cv::imshow("KrischCompassNorthEast", convolatedImage);
+
+    convolutionLayer = ProcessLayer(Kernel3x3::KrischCompassSouthWest(), 0, new ReLU(), new MaxPooling(2, 2));
+    matrix  =  convolutionLayer.CalculateConvolution(matImg);
+    convolatedImage  =  Utils::MatrixToImage(matrix);
+    cv::namedWindow("KrischCompassNorthEast", cv::WINDOW_NORMAL);
+    cv::imshow("KrischCompassNorthEast", convolatedImage);
+
+
+
+
+
+    convolutionLayer = ProcessLayer(Kernel3x3::RobinsonCompassEast(), 0, new ReLU(), new MaxPooling(2, 2));
+    matrix  =  convolutionLayer.CalculateConvolution(matImg);
+    convolatedImage  =  Utils::MatrixToImage(matrix);
+    cv::namedWindow("RobinsonCompassEast", cv::WINDOW_NORMAL);
+    cv::imshow("RobinsonCompassEast", convolatedImage);
+
+    convolutionLayer = ProcessLayer(Kernel3x3::RobinsonCompassNorth(), 0, new ReLU(), new MaxPooling(2, 2));
+    matrix  =  convolutionLayer.CalculateConvolution(matImg);
+    convolatedImage  =  Utils::MatrixToImage(matrix);
+    cv::namedWindow("RobinsonCompassNorth", cv::WINDOW_NORMAL);
+    cv::imshow("RobinsonCompassNorth", convolatedImage);
+
+    convolutionLayer = ProcessLayer(Kernel3x3::RobinsonCompassNorthEast(), 0, new ReLU(), new MaxPooling(2, 2));
+    matrix  =  convolutionLayer.CalculateConvolution(matImg);
+    convolatedImage  =  Utils::MatrixToImage(matrix);
+    cv::namedWindow("RobinsonCompassNorthEast", cv::WINDOW_NORMAL);
+    cv::imshow("RobinsonCompassNorthEast", convolatedImage);
+
+    convolutionLayer = ProcessLayer(Kernel3x3::RobinsonCompassNorthWest(), 0, new ReLU(), new MaxPooling(2, 2));
+    matrix  =  convolutionLayer.CalculateConvolution(matImg);
+    convolatedImage  =  Utils::MatrixToImage(matrix);
+    cv::namedWindow("RobinsonCompassNorthWest", cv::WINDOW_NORMAL);
+    cv::imshow("RobinsonCompassNorthWest", convolatedImage);
+
+    convolutionLayer = ProcessLayer(Kernel3x3::RobinsonCompassWest(), 0, new ReLU(), new MaxPooling(2, 2));
+    matrix  =  convolutionLayer.CalculateConvolution(matImg);
+    convolatedImage  =  Utils::MatrixToImage(matrix);
+    cv::namedWindow("RobinsonCompassWest", cv::WINDOW_NORMAL);
+    cv::imshow("RobinsonCompassWest", convolatedImage);
+
+    convolutionLayer = ProcessLayer(Kernel3x3::RobinsonCompassSouth(), 0, new ReLU(), new MaxPooling(2, 2));
+    matrix  =  convolutionLayer.CalculateConvolution(matImg);
+    convolatedImage  =  Utils::MatrixToImage(matrix);
+    cv::namedWindow("RobinsonCompassSouth", cv::WINDOW_NORMAL);
+    cv::imshow("RobinsonCompassSouth", convolatedImage);
+
+    convolutionLayer = ProcessLayer(Kernel3x3::RobinsonCompassSouthEast(), 0, new ReLU(), new MaxPooling(2, 2));
+    matrix  =  convolutionLayer.CalculateConvolution(matImg);
+    convolatedImage  =  Utils::MatrixToImage(matrix);
+    cv::namedWindow("RobinsonCompassNorthEast", cv::WINDOW_NORMAL);
+    cv::imshow("RobinsonCompassNorthEast", convolatedImage);
+
+    convolutionLayer = ProcessLayer(Kernel3x3::RobinsonCompassSouthWest(), 0, new ReLU(), new MaxPooling(2, 2));
+    matrix  =  convolutionLayer.CalculateConvolution(matImg);
+    convolatedImage  =  Utils::MatrixToImage(matrix);
+    cv::namedWindow("RobinsonCompassNorthEast", cv::WINDOW_NORMAL);
+    cv::imshow("RobinsonCompassNorthEast", convolatedImage);
     */
 
     /*
@@ -138,10 +238,7 @@ int main(int argc, const char** argv)
 
 
 
-
-   
-
-
+    
     auto LoadData = [](const std::string& folderPath)->std::vector<CnnData> {
         std::vector<CnnData> set;
 
@@ -161,7 +258,6 @@ int main(int argc, const char** argv)
 
         std::random_device rd;
         std::mt19937 g(rd());
-
         std::shuffle(set.begin(), set.end(), g);
         for (auto o : set) { std::cout << o.labelIndex << "  "; }
 
@@ -172,8 +268,11 @@ int main(int argc, const char** argv)
 
     //std::vector<CnnData> testingSet = { }; //
 
-    Eigen::MatrixXd kernel  =  Eigen::MatrixXd::Ones(3, 3);
+    Eigen::MatrixXd kernel  =  Eigen::MatrixXd(3, 3);
 
+    std::cout << "\n\n" << kernel << "\n\n\n";
+
+    kernel = Kernel3x3::RandomCloseToZero(3, 3);
 
     std::initializer_list<ProcessLayer> processLayer ={
         ProcessLayer(kernel, 0, new ReLU(), new MaxPooling(2,2)),
@@ -186,7 +285,7 @@ int main(int argc, const char** argv)
     cnn.MaxAcceptableError(0.005);
 
     cnn.Training(trainigSet,
-                 10,
+                 1000,
                  [](int label) -> std::vector<double> {
                      std::vector<double> correctOutput = std::vector<double>((size_t)10, 0.0);
                      correctOutput[label] = 1.0;
@@ -247,7 +346,7 @@ int main(int argc, const char** argv)
     double accuracy = 1.0 - ((double)errors/totalData);
     std::cout << "accuracy: " << accuracy << "\n\n";
     std::cout << confusionMatrix << "\n\n";
-
+    
 
 
 

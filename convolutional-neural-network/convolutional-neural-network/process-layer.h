@@ -31,7 +31,7 @@ class ProcessLayer {
 		Eigen::MatrixXd _convolutionOutput;
 		Eigen::MatrixXd _poolingOutput;
 
-		ProcessLayer(Eigen::MatrixXd& kernel, int padding = 0, IActivationFunction* actFunc = new ReLU(), IPooling* pooling = new DontPooling());
+		ProcessLayer(Eigen::MatrixXd kernel, int padding = 0, IActivationFunction* actFunc = new ReLU(), IPooling* pooling = new DontPooling());
 		ProcessLayer(std::vector<std::vector<double>>& kernel, int padding = 0, IActivationFunction* actFunc = new ReLU(), IPooling* pooling = new DontPooling());
 		~ProcessLayer();
 

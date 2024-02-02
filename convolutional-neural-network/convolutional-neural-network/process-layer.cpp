@@ -3,7 +3,7 @@
 
 
 
-ProcessLayer::ProcessLayer(Eigen::MatrixXd& kernel, int padding, IActivationFunction* actFunc, IPooling* pooling)
+ProcessLayer::ProcessLayer(Eigen::MatrixXd kernel, int padding, IActivationFunction* actFunc, IPooling* pooling)
     : _activationFunction(actFunc), _poolingLayer(pooling)
 {
     

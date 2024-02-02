@@ -8,6 +8,7 @@
 #include <cmath>
 #include <cassert>
 #include <opencv2/opencv.hpp>
+#include "kernels.h"
 #include "utils.h"
 
 using Matrix = Eigen::MatrixXd;

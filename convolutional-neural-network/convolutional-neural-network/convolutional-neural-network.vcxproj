@@ -191,6 +191,7 @@ copy "D:\w\.debugger\convolutional-neural-network\.dependencies\opencv\build\x64
     <ClCompile Include="activation-function.cpp" />
     <ClCompile Include="convolution-layer.cpp" />
     <ClCompile Include="convolutiona-neural-network.cpp" />
+    <ClCompile Include="kernels.cpp" />
     <ClCompile Include="process-layer.cpp" />
     <ClCompile Include="image-manager.cpp" />
     <ClCompile Include="layer.cpp" />
@@ -205,6 +206,7 @@ copy "D:\w\.debugger\convolutional-neural-network\.dependencies\opencv\build\x64
     <ClInclude Include="activation-function.h" />
     <ClInclude Include="convolution-layer.h" />
     <ClInclude Include="convolutional-neural-network.h" />
+    <ClInclude Include="kernels.h" />
     <ClInclude Include="layer-architecture.h" />
     <ClInclude Include="process-layer.h" />
     <ClInclude Include="data-manager.h" />

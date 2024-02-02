@@ -6,6 +6,8 @@
 #include <vector>
 #include <cmath>
 #include <cassert>
+#include <random>
+#include <algorithm>
 #include <opencv2/opencv.hpp>
 #include "process-layer.h"
 #include "multy-layer-perceptron.h"

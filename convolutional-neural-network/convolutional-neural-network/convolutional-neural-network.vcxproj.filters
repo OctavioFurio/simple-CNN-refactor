@@ -58,6 +58,9 @@
     <ClCompile Include="utils.cpp">
       <Filter>03 - convolutional-neural-network\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="kernels.cpp">
+      <Filter>03 - convolutional-neural-network\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="neuron.h">
@@ -98,6 +101,9 @@
     </ClInclude>
     <ClInclude Include="layer-architecture.h">
       <Filter>01 - multy-layer-perceptron\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="kernels.h">
+      <Filter>03 - convolutional-neural-network\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

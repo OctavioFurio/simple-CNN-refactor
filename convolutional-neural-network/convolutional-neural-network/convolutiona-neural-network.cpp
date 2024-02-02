@@ -247,6 +247,10 @@ void CNN::Training(std::vector<CnnTrainingData> trainigSet, int callbackExecutio
 		}
 
 
+		std::random_device rd;
+		std::mt19937 g(rd());
+		std::shuffle(trainigSet.begin(), trainigSet.end(), g);
+
 		//// ------------------
 		//// coloque seu calback aqui
 		//// ------------------
@@ -274,6 +278,12 @@ void CNN::Training(std::vector<CnnTrainingData> trainigSet, int callbackExecutio
 		
 
 		ephocs++;
+
+		//ephocs <= _maxEphocs  &&  errors > _minError  &&  minimalChangesCounter != 20
+		if (!(ephocs <= _maxEphocs)) { std::cout << "\n\n[MAX EPHOC]\n\n"; }
+		else if (!(errors > _minError)) { std::cout << "\n\n[MIN ERROR]\n\n"; }
+		else if (!(minimalChangesCounter != 20)) { std::cout << "\n\n[ERROR NOT CHANGING]\n\n"; }
+
 	}
 }
 
