@@ -73,18 +73,19 @@ Eigen::MatrixXd ConvolutionLayer::CalculateConvolution(cv::Mat image)
 
 Eigen::MatrixXd ConvolutionLayer::Backward(Eigen::MatrixXd input, Eigen::MatrixXd incomeGradient, double learningRate)
 {
-
     // calcular o dE/dX (derivada parcial da funcao custo com relacao a entrada) usado para atualizar a proxima camada
     Eigen::MatrixXd flippedMatrix  =  Utils::FlipMatrixBy180Degree(_kernel);
     Eigen::MatrixXd gradientOfLostWithRespctToInput  =  Convolution2D(incomeGradient, flippedMatrix, flippedMatrix.rows()-1, flippedMatrix.cols()-1);
 
 
+
+
     // update kernel    (dE/dF)     updated after gradient Of Lost With Respct To Input was calculated
     _gradient = Convolution2D(input, incomeGradient);
-    _kernel = _kernel + learningRate * _gradient;
+    _kernel = _kernel - learningRate * _gradient;
 
-    //std::cout << "\n\_gradient\n" << _gradient << "\n";
-    //std::cout << "\n\nkernel\n" << _kernel << "\n";
+
+    //_kernel = Utils::BatchNormalization( _kernel );
     
    
 

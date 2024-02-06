@@ -12,7 +12,7 @@ Neuron::Neuron(size_t inputSize, IActivationFunction* actFun, double leraningRat
     _weights = std::vector<double>(_inputSize, 1.0);
 
     for (auto& weight : _weights) {
-        weight  =  RandomNormalDistributionvalue(-1.0, 1.0);
+        weight  =  RandomNormalDistributionvalue(-0.3, 0.3);
     }
 }
 

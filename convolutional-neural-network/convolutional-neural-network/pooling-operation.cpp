@@ -137,15 +137,15 @@ Matrix& DontPooling::FowardPooling(Eigen::MatrixXd& input)
 
 size_t DontPooling::Rows()
 {
-    return 0;
+    return 1;
 }
 
 size_t DontPooling::Cols()
 {
-    return 0;
+    return 1;
 }
 
 Matrix DontPooling::BackwardPooling(Eigen::MatrixXd& input)
 {
-    return Matrix();
+    return input;
 }

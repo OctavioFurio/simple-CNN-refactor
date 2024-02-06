@@ -90,7 +90,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\w\.debugger\convolutional-neural-network\.dependencies\eigen-3.4.0;D:\w\.debugger\convolutional-neural-network\.dependencies\opencv\build\include;D:\w\.debugger\convolutional-neural-network\.dependencies\json-develop\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\w\chaos-theory\lorenz-attractor\lorenz-attractor;D:\w\.debugger\convolutional-neural-network\.dependencies\eigen-3.4.0;D:\w\.debugger\convolutional-neural-network\.dependencies\opencv\build\include;D:\w\.debugger\convolutional-neural-network\.dependencies\json-develop\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -116,7 +116,7 @@ copy "D:\w\.debugger\convolutional-neural-network\.dependencies\opencv\build\x64
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\w\.debugger\convolutional-neural-network\.dependencies\eigen-3.4.0;D:\w\.debugger\convolutional-neural-network\.dependencies\opencv\build\include;D:\w\.debugger\convolutional-neural-network\.dependencies\json-develop\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\w\chaos-theory\lorenz-attractor\lorenz-attractor;D:\w\.debugger\convolutional-neural-network\.dependencies\eigen-3.4.0;D:\w\.debugger\convolutional-neural-network\.dependencies\opencv\build\include;D:\w\.debugger\convolutional-neural-network\.dependencies\json-develop\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -142,7 +142,7 @@ copy "D:\w\.debugger\convolutional-neural-network\.dependencies\opencv\build\x64
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\w\.debugger\convolutional-neural-network\.dependencies\eigen-3.4.0;D:\w\.debugger\convolutional-neural-network\.dependencies\opencv\build\include;D:\w\.debugger\convolutional-neural-network\.dependencies\json-develop\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\w\chaos-theory\lorenz-attractor\lorenz-attractor;D:\w\.debugger\convolutional-neural-network\.dependencies\eigen-3.4.0;D:\w\.debugger\convolutional-neural-network\.dependencies\opencv\build\include;D:\w\.debugger\convolutional-neural-network\.dependencies\json-develop\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -168,7 +168,7 @@ copy "D:\w\.debugger\convolutional-neural-network\.dependencies\opencv\build\x64
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\w\.debugger\convolutional-neural-network\.dependencies\eigen-3.4.0;D:\w\.debugger\convolutional-neural-network\.dependencies\opencv\build\include;D:\w\.debugger\convolutional-neural-network\.dependencies\json-develop\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\w\chaos-theory\lorenz-attractor\lorenz-attractor;D:\w\.debugger\convolutional-neural-network\.dependencies\eigen-3.4.0;D:\w\.debugger\convolutional-neural-network\.dependencies\opencv\build\include;D:\w\.debugger\convolutional-neural-network\.dependencies\json-develop\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

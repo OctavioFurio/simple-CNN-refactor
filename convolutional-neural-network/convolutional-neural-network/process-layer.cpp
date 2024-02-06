@@ -31,9 +31,9 @@ ProcessLayer::~ProcessLayer()
 
 Eigen::MatrixXd ProcessLayer::CalculateConvolution(Eigen::MatrixXd input)
 {
-    std::vector<double> flattedIncomeInput = Utils::FlatMatrix(input);
+    /*std::vector<double> flattedIncomeInput = Utils::FlatMatrix(input);
     std::vector<double> normalizedIncomeInput = Utils::BatchNormalization(flattedIncomeInput);
-    input  =  Utils::ReshapeMatrix(normalizedIncomeInput, input.rows(), input.cols());
+    input  =  Utils::ReshapeMatrix(normalizedIncomeInput, input.rows(), input.cols());*/
 
     // por que nao armazena
     Eigen::MatrixXd concolvedMatrix  =  _convolutionLayer.CalculateConvolution(input);

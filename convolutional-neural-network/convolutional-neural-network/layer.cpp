@@ -181,11 +181,11 @@ size_t Layer::LayerIndex()
 
 std::ostream& operator<<(std::ostream& os, Layer layer)
 {
-	/*for (auto& n : layer._neurons) {
-		os << n << "  ";
-	}*/
+	for (auto& n : layer._neurons) {
+		os << n.Gradient() << "  ";
+	}
 
-	os << layer._neurons[0] << "  ";
+	//os << layer._neurons[0] << "  ";
 
 	return os;
 }

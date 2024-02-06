@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <algorithm>
 #include <random>
+#include "gnuplot-include.h"
 #include "multy-layer-perceptron.h"
 #include "convolutional-neural-network.h"
 
@@ -11,6 +12,10 @@
 
 int main(int argc, const char** argv)
 {
+    Gnuplot gnuplot;
+    gnuplot.OutFile("..\\..\\.resources\\gnuplot-output\\res.dat");
+
+
     /*
     cv::Mat image  =  cv::imread("..\\..\\.resources\\humano-original.png", cv::IMREAD_GRAYSCALE);
     //cv::resize(image, image, cv::Size(image.rows/2, image.cols/2));
@@ -167,13 +172,44 @@ int main(int argc, const char** argv)
     cv::imshow("RobinsonCompassNorthEast", convolatedImage);
     */
 
+
     /*
-    cv::Mat image  =  cv::imread("..\\..\\.resources\\train-debug\\humano.png", cv::IMREAD_GRAYSCALE);
-    Eigen::MatrixXd input  =  Utils::ImageToMatrix(image);
+    int l = -1;
+    int count = 0;
+    
+    std::string destFile = "..\\..\\.resources\\train-debug-8x8\\";
+
+    for (const auto& entry : std::filesystem::directory_iterator("..\\..\\.resources\\train")) {
+        if (std::filesystem::is_regular_file(entry.path())) {
+
+            std::string fullPathName = entry.path().string();
+            cv::Mat img = cv::imread(fullPathName);
+
+            std::string fileName = entry.path().filename().string();
+            std::string labelStr = Utils::SplitString(fileName, "_")[0];
+            int label = std::stoi(labelStr);
+            
+
+            if (label == 9 && count < 102) {
+                std::string dest = destFile + entry.path().filename().string();
+
+                cv::imwrite(dest, img);
+                std::cout << dest << "\n";
+                count++;
+            }
+
+        }
+    }
+    */
+        
 
 
+
+    /*
     auto LoadData = [](const std::string& folderPath)->std::vector<CnnData> {
         std::vector<CnnData> set;
+
+        int l = -1;
 
         for (const auto& entry : std::filesystem::directory_iterator(folderPath)) {
             if (std::filesystem::is_regular_file(entry.path())) {
@@ -186,15 +222,15 @@ int main(int argc, const char** argv)
                 Eigen::MatrixXd input = Utils::ImageToMatrix( cv::imread(fullPathName) );
 
                 set.push_back( {input, label} );
+
+                if (label > l) { l = label; std::cout << label << "\n"; }
             }
         }
 
         return set;
     };
 
-    std::vector<CnnData> Set = LoadData("..\\..\\.resources\\train-debug");
-
-    //std::vector<CnnData> testingSet ={ }; //
+    std::vector<CnnData> Set = LoadData("..\\..\\.resources\\train-edbug");
 
 
     std::vector<DATA> trainigSet;
@@ -205,80 +241,74 @@ int main(int argc, const char** argv)
         trainigSet.push_back( {inputs, s.labelIndex } );
     }
 
-    Eigen::MatrixXd kernel  =  Eigen::MatrixXd::Ones(3, 3);
 
-    MLP mlp = MLP(28*28, { 70, 50, 10 }, new Tanh(), 0.03);
+
+    MLP mlp = MLP(28*28, { 100, 10 }, new Sigmoid(), 0.03);
+    mlp.AcceptableMeanError(0.000000007);
+
+    int ephocCounter = -1;
 
     mlp.Training(trainigSet,
-                 10000,
+                 1,
                  [](int label) -> std::vector<double> {
                      std::vector<double> correctOutput = std::vector<double>((size_t)10, 0.0);
                      correctOutput[label] = 1.0;
                      return correctOutput;
                  },
-                 [&mlp, &trainigSet]() {
-                     std::cout << mlp << "\n";
+                 [&mlp, &trainigSet, &ephocCounter, &gnuplot]() {
 
-                     size_t index = 0;
+                     ephocCounter++;
 
-                     std::vector<double> givenOutput = mlp.Forward(trainigSet[index].inputs);
+                     Eigen::MatrixXd confusionMatrix = Eigen::MatrixXd::Zero(10, 10);
+                     int totalData = 0;
+                     int errors = 0;
 
-                     auto it = std::max_element(givenOutput.begin(), givenOutput.end());
-                     int givenLabel = std::distance(givenOutput.begin(), it);
 
-                     std::cout << "corrent output: " << trainigSet[index].labelIndex << "\n";
-                     std::cout << "given output:   " << givenLabel << "\n";
-                     std::cout << "given vector: \n";
-                     for (auto o : givenOutput) { std::cout << o << "  "; }
+                     for (const auto& entry : std::filesystem::directory_iterator("..\\..\\.resources\\train-debug")) {
+                         if (std::filesystem::is_regular_file(entry.path())) {
 
-                     std::cout << "\n\nt1";
+                             std::string fileName = entry.path().filename().string();
+                             std::string labelStr = Utils::SplitString(fileName, "_")[0];
+                             int label = std::stoi(labelStr);
+
+                             std::string fullPathName = entry.path().string();
+                             Eigen::MatrixXd input = Utils::ImageToMatrix(cv::imread(fullPathName));
+
+                             std::vector<double> inputs = Utils::FlatMatrix(input);
+                             inputs.insert(inputs.begin(), 1.0);
+
+
+                             std::vector<double> givenOutput = mlp.Forward(inputs);
+
+                             auto it = std::max_element(givenOutput.begin(), givenOutput.end());
+                             int givenLabel = std::distance(givenOutput.begin(), it);
+
+                             confusionMatrix(givenLabel, label) += 1.0;
+
+                             totalData++;
+
+                             if (givenLabel != label) { errors++; }
+                         }
+                     }
+
+                     double accuracy = 1.0 - ((double)errors/totalData);
+
+                     if (ephocCounter % 100 == 0) {
+                         std::cout << "accuracy: " << accuracy << "\n\n";
+                         std::cout << confusionMatrix << "\n\n";
+                     }
+
+                     gnuplot.out << ephocCounter << " " << accuracy << "\n";
                  }
     );
-    
 
-
-    Eigen::MatrixXd confusionMatrix = Eigen::MatrixXd::Zero(10, 10);
-    int totalData = 0;
-    int errors = 0;
-
-
-    for (const auto& entry : std::filesystem::directory_iterator("..\\..\\.resources\\train-debug")) {
-        if (std::filesystem::is_regular_file(entry.path())) {
-
-            std::string fileName = entry.path().filename().string();
-            std::string labelStr = Utils::SplitString(fileName, "_")[0];
-            int label = std::stoi(labelStr);
-
-            std::string fullPathName = entry.path().string();
-            Eigen::MatrixXd input = Utils::ImageToMatrix(cv::imread(fullPathName));
-
-
-            std::vector<double> inputs = Utils::FlatMatrix(input);
-            inputs.insert(inputs.begin(), 1.0);
-
-
-            std::vector<double> givenOutput = mlp.Forward(inputs);
-
-            auto it = std::max_element(givenOutput.begin(), givenOutput.end());
-            int givenLabel = std::distance(givenOutput.begin(), it);
-
-            confusionMatrix(givenLabel, label) += 1.0;
-
-            totalData++;
-
-            if (givenLabel != label) { errors++; }
-        }
-    }
-
-
-    std::cout << "\n\n\n\n\n\n";
-
-    double accuracy = 1.0 - ((double)errors/totalData);
-    std::cout << "accuracy: " << accuracy << "\n\n";
-    std::cout << confusionMatrix << "\n\n";
     */
 
 
+
+    
+ 
+  
     
     auto LoadData = [](const std::string& folderPath)->std::vector<CnnData> {
         std::vector<CnnData> set;
@@ -309,59 +339,93 @@ int main(int argc, const char** argv)
         return set;
     };
 
-    std::vector<CnnData> trainigSet = LoadData("..\\..\\.resources\\train-debug");
+    std::vector<CnnData> trainigSet = LoadData("..\\..\\.resources\\train-debug-8x8");
 
     //std::vector<CnnData> testingSet = { }; //
 
-    Eigen::MatrixXd kernel = Eigen::MatrixXd::Constant(7,7, 1.0/49.0);
+    Eigen::MatrixXd kernel = Eigen::MatrixXd::Constant(3,3, 1.0);
 
     std::cout << "\n\n" << kernel << "\n\n\n";
 
 
     std::initializer_list<ProcessLayer> processLayer ={
-        ProcessLayer(kernel, 0, new ReLU(), new MaxPooling(3,3)),
+        ProcessLayer(kernel, 0, new ReLU(), new DontPooling()),
         //ProcessLayer(kernel, 0, new ReLU(), new MaxPooling(2,2))
     };
 
+    
+    CNN cnn = CNN(28, 28, processLayer, { 100, 10 }, new Sigmoid(), 0.03);
 
-    CNN cnn = CNN(28, 28, processLayer, { 50, 10 }, new Tanh (), 0.03);
-
-    cnn.MaxAcceptableError(0.05);
+    cnn.MaxAcceptableError(0.000005);
     cnn.LearningRate(0.003);
 
+    int ephocCounter = -1;
+
     cnn.Training(trainigSet,
-                 100,
+                 1,
                  [](int label) -> std::vector<double> {
                      std::vector<double> correctOutput = std::vector<double>((size_t)10, 0.0);
                      correctOutput[label] = 1.0;
                      return correctOutput;
                  },
-                 [&cnn, &trainigSet]() {
-                     std::cout << "\n-------------------------------------------------------\n\n";
-                     std::cout << cnn << "\n";
+                 [&cnn, &trainigSet, &ephocCounter, &gnuplot]() {
 
-                     size_t index = 0;
-                     std::vector<double> givenOutput = cnn.ProcessInput(trainigSet[index].inputs);
+                     ephocCounter++;
 
-                     auto it = std::max_element(givenOutput.begin(), givenOutput.end());
-                     int givenLabel = std::distance(givenOutput.begin(), it);
+                     Eigen::MatrixXd confusionMatrix = Eigen::MatrixXd::Zero(10, 10);
+                     int totalData = 0;
+                     int errors = 0;
 
-                     std::cout << "corrent output: " << trainigSet[index].labelIndex << "\n";
-                     std::cout << "given output:   " << givenLabel << "\n";
-                     std::cout << "given vector: \n";
-                     for (auto o : givenOutput) { std::cout << o << "  "; }
 
-                     std::cout << "\n\n";
+                     for (const auto& entry : std::filesystem::directory_iterator("..\\..\\.resources\\train-debug-8x8")) {
+                         if (std::filesystem::is_regular_file(entry.path())) {
+
+                             std::string fileName = entry.path().filename().string();
+                             std::string labelStr = Utils::SplitString(fileName, "_")[0];
+                             int label = std::stoi(labelStr);
+
+                             std::string fullPathName = entry.path().string();
+                             Eigen::MatrixXd input = Utils::ImageToMatrix(cv::imread(fullPathName));
+
+
+                             std::vector<double> givenOutput = cnn.ProcessInput(input);
+
+                             auto it = std::max_element(givenOutput.begin(), givenOutput.end());
+                             int givenLabel = std::distance(givenOutput.begin(), it);
+
+                             confusionMatrix(givenLabel, label) += 1.0;
+
+                             totalData++;
+
+                             if (givenLabel != label) { errors++; }
+                         }
+                     }
+
+                     double accuracy = 1.0 - ((double)errors/totalData);
+                     double kernelMean = cnn.ProcessLayers()[0].Gradient().cwiseProduct(Eigen::MatrixXd::Ones(3,3)).sum() / 9.0;
+
+                     if (ephocCounter % 10 == 0) {
+                         std::cout << "accuracy: " << accuracy << "\n\n";
+                         std::cout << confusionMatrix << "\n\n";
+
+                         std::cout << "gradient:\n" << cnn.ProcessLayers()[0].Gradient() << "\n\n";
+                         std::cout << "kernel:\n" << cnn.ProcessLayers()[0].Kernel() << "\n\n";
+                         std::cout << "-------------------------------------\n\n\n";
+                     }
+
+                     gnuplot.out << ephocCounter << " " << accuracy << " " << kernelMean <<  "\n";
                  }
     );
-    
+
+    gnuplot.out.close();
+
 
     Eigen::MatrixXd confusionMatrix = Eigen::MatrixXd::Zero(10, 10);
     int totalData = 0;
     int errors = 0;
 
 
-    for (const auto& entry : std::filesystem::directory_iterator("..\\..\\.resources\\train-debug")) {
+    for (const auto& entry : std::filesystem::directory_iterator("..\\..\\.resources\\train-debug-8x8")) {
         if (std::filesystem::is_regular_file(entry.path())) {
 
             std::string fileName = entry.path().filename().string();
@@ -393,6 +457,12 @@ int main(int argc, const char** argv)
     std::cout << confusionMatrix << "\n\n";
     
 
+
+
+    gnuplot << "set xrange [0:] \n";
+    gnuplot << "plot \'..\\..\\.resources\\gnuplot-output\\res.dat\' using 1:2 w l, ";
+    gnuplot << "\'..\\..\\.resources\\gnuplot-output\\res.dat\' using 1:3 w l \n";
+    //gnuplot << "set terminal pngcairo enhanced \n set output \'..\\..\\.resources\\gnuplot-output\\accuracy.png\' \n";
 
 
     cv::waitKey(0);

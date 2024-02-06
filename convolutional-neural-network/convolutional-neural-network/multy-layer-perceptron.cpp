@@ -34,7 +34,7 @@ MLP::MLP(size_t inputSize, std::vector<size_t> mlpArchitecture, IActivationFunct
 
 MLP::MLP(size_t inputSize, std::vector<LayerArchitecture> layersArchitecture)
 {
-	_maxEphocs = 50000000;
+	_maxEphocs = 6000;
 	_minError = -1.0;
 	_errorEnergy = -1.0;
 	_layersSize  =  layersArchitecture.size();
@@ -119,6 +119,8 @@ std::vector<double> MLP::Backward(std::vector<double> correctOutputs, std::vecto
 	std::vector<double> accumulatedPropagatedErrors  =  _layers[layerIndex+1].AccumulatedPropagatedErrorByPreviousLayer(neuronsInCurrentLayer);
 	_layers[0].UpdateHiddenLayerNeurons(accumulatedPropagatedErrors, inputs);
 
+
+	// return gradient with respest to inputs
 	std::vector<double> fistLayerInputGradient  =  _layers[0].AccumulatedPropagatedErrorByPreviousLayer(inputs.size());
 
 	return fistLayerInputGradient;
@@ -174,7 +176,7 @@ void MLP::Training(std::vector<TrainigData> trainigSet, int callbackExecutionPer
 	int trainingSetLenght = trainigSet.size();
 	int minimalChangesCounter = 0;
 
-	while (ephocs <= _maxEphocs  &&  errors > _minError  && errorEnergy > _errorEnergy  &&  minimalChangesCounter != 20000) {
+	while (ephocs <= _maxEphocs  &&  errors > _minError  && errorEnergy > _errorEnergy  &&  minimalChangesCounter != 200) {
 
 		for (int i = 0; i < trainingSetLenght; i++) {
 			std::vector<double> inputs  =  trainigSet[i].first;
@@ -186,6 +188,9 @@ void MLP::Training(std::vector<TrainigData> trainigSet, int callbackExecutionPer
 			Backward(labels, inputs);
 		}
 
+		std::random_device rd;
+		std::mt19937 g(rd());
+		std::shuffle(trainigSet.begin(), trainigSet.end(), g);
 
 		/// ------------------
 		/// imagem/video do mlp aprendendo - coloque seu calback aqui
@@ -208,9 +213,13 @@ void MLP::Training(std::vector<TrainigData> trainigSet, int callbackExecutionPer
 
 		errors = currentErrors; 
 
+		if (!(ephocs <= _maxEphocs)) { std::cout << "\n\n[MAX EPHOC]\n\n"; } 
+		else if (!(errors > _minError)) { std::cout << "\n\n[MIN ERROR]\n\n"; } 
+		else if (!(minimalChangesCounter != 20)) { std::cout << "\n\n[ERROR NOT CHANGING]\n\n"; }
+
 		ephocs++;
 	}
-
+	 
 }
 
 

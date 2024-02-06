@@ -13,7 +13,7 @@ CNN::CNN(
 	, double learningRate
 ) {
 
-	_maxEphocs = 50000;
+	_maxEphocs = 500;    //500; ou 2000
 	_minError = -1.0;
 	_errorEnergy = -1.0;
 
@@ -46,22 +46,31 @@ CNN::~CNN()
 
 std::vector<double> CNN::Forward(Eigen::MatrixXd input)
 {
-	Eigen::MatrixXd processResult = Utils::BatchNormalization(input);
+	std::vector<double> DEBUGflattInput = Utils::FlatMatrix(input);
+	Eigen::MatrixXd processResult = input;
 
 	for (auto& processLayer : _processLayers) {
-		 Eigen::MatrixXd convolvedMatrix  =  processLayer.CalculateConvolution(processResult);
-		 Eigen::MatrixXd activatedMatrix  =  processLayer.ApplayActivationFunction(convolvedMatrix);
-		 Eigen::MatrixXd pooledMatrix	 =  processLayer.CalculatePooling( activatedMatrix );
 
-		 processResult = pooledMatrix;
+		Eigen::MatrixXd kernel = processLayer.Kernel();
+		std::vector<double> DEBUGkernel = Utils::FlatMatrix(kernel);//--- DEBUG ---//
+
+		Eigen::MatrixXd convolvedMatrix  =  processLayer.CalculateConvolution(processResult);
+		std::vector<double> DEBUGconvolvedMatrix = Utils::FlatMatrix(convolvedMatrix);//--- DEBUG ---//
+
+		Eigen::MatrixXd activatedMatrix  =  processLayer.ApplayActivationFunction(convolvedMatrix);
+		std::vector<double> DEBUGflattconvoactivatedMatrix = Utils::FlatMatrix(activatedMatrix);//--- DEBUG ---//
+
+		Eigen::MatrixXd pooledMatrix	 =  processLayer.CalculatePooling( activatedMatrix );
+		std::vector<double> DEBUGflattconvolvedpooledMatrix = Utils::FlatMatrix(pooledMatrix);//--- DEBUG ---//
+
+		processResult = pooledMatrix;
 	}
 
 	_reshapeRows = processResult.rows();
 	_reshapeCols = processResult.cols();
 
 	_flattedMatrix  =  Flattening( processResult );
-	//std::cout << "\n_flattedMatrix\n" << processResult << "\n\n";
-	_flattedMatrix  =  Utils::BatchNormalization(_flattedMatrix);
+	//_flattedMatrix  =  Utils::BatchNormalization(_flattedMatrix);
 	_flattedMatrix.insert(_flattedMatrix.begin(), 1.0);
 	
 	std::vector<double> mlpOutput  =  _mlp.Forward( _flattedMatrix );
@@ -74,9 +83,6 @@ std::vector<double> CNN::Forward(Eigen::MatrixXd input)
 
 std::vector<double> CNN::Backward(std::vector<double> correctOutputs, Eigen::MatrixXd input)
 {
-	//std::vector<double> mlpInputs  =  Utils::BatchNormalization(_flattedMatrix);
-	//mlpInputs.insert(mlpInputs.begin(), 1.0);
-
 	std::vector<double> inputsGradient = _mlp.Backward(correctOutputs, _flattedMatrix);
 	inputsGradient = std::vector<double>(inputsGradient.begin()+1, inputsGradient.end());
 
@@ -93,7 +99,6 @@ std::vector<double> CNN::Backward(std::vector<double> correctOutputs, Eigen::Mat
 	}
 
 	// update fist layer
-	input = Utils::BatchNormalization(input);
 	Eigen::MatrixXd backwardPooling  =  _processLayers[0].PoolingBackward(gradientFromNextLayer);
 	gradientFromNextLayer  =  _processLayers[0].ConvolutionBackward(input, backwardPooling, _learningRate);
 
@@ -240,11 +245,6 @@ void CNN::Training(std::vector<CnnTrainingData> trainigSet, int callbackExecutio
 			
 
 			iterationError  +=  ( std::accumulate( _lastLayerErrors.begin(), _lastLayerErrors.end(), 0.0, [](double acc, double val) { return acc + (val*val); }) / _lastLayerErrors.size());
-		}
-
-		//normalize convolution Kernel
-		for (auto& processLayer : _processLayers) {
-			processLayer.NormalizeKernel();
 		}
 
 
