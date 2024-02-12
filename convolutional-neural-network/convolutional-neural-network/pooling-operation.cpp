@@ -31,20 +31,27 @@ Matrix& AveragePooling::FowardPooling(Eigen::MatrixXd& input)
     return result;
 }
 
+
+
 size_t AveragePooling::Rows()
 {
     return _rows;
 }
+
+
 
 size_t AveragePooling::Cols()
 {
     return _cols;
 }
 
+
+
 Matrix AveragePooling::BackwardPooling(Eigen::MatrixXd& input)
 {
     return Matrix();
 }
+
 
 
 
@@ -58,6 +65,8 @@ MaxPooling::MaxPooling(size_t rows, size_t cols)
     : _rows(rows), _cols(cols)
 {
 }
+
+
 
 Matrix& MaxPooling::FowardPooling(Eigen::MatrixXd& input)
 {
@@ -80,16 +89,13 @@ Matrix& MaxPooling::FowardPooling(Eigen::MatrixXd& input)
         }
     }
 
-    //std::cout << "_backwardMatrix:\n" << _backwardMatrix << "\n\n";
-
     return result;
 }
 
+
+
 Matrix MaxPooling::BackwardPooling(Eigen::MatrixXd& input)
 {
-    //std::cout << "input:\n" << input << "\n\n\n";
-    //std::cout << "_backwardMatrix:\n" << _backwardMatrix << "\n\n";
-
     for (int i = 0; i < input.rows(); i++) {
         for (int j = 0; j < input.cols(); j++) {
 
@@ -105,14 +111,17 @@ Matrix MaxPooling::BackwardPooling(Eigen::MatrixXd& input)
         }
     }
 
-
     return _backwardMatrix;
 }
+
+
 
 size_t MaxPooling::Rows()
 {
     return _rows;
 }
+
+
 
 size_t MaxPooling::Cols()
 {
@@ -123,7 +132,7 @@ size_t MaxPooling::Cols()
 
 
 /// -----------------
-/// Don't Pooling
+/// Don't Pooling / NoPool
 /// -----------------
 
 DontPooling::DontPooling()

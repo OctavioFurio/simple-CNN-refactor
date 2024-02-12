@@ -32,9 +32,8 @@ int main(int argc, const char** argv)
 
 				set.push_back( {input, label} );
 
-				if (label > l) 
-					l = label; std::cout << label << "\n";
-
+				if (label > l) { l = label; std::cout << label << "\n"; }
+	
 			}
 
 		std::random_device rd;
@@ -173,4 +172,3 @@ int main(int argc, const char** argv)
 	std::cout << "\n\n\n[SUCESSO - 1]\n\n\n";
 	cv::waitKey(0);
 }
-

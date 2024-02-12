@@ -2,7 +2,6 @@
 
 
 
-
 Eigen::MatrixXd Kernel3x3::Ones(size_t row, size_t col)
 {
     Eigen::MatrixXd kernel = Eigen::MatrixXd::Ones(row, col);
@@ -84,9 +83,8 @@ Eigen::MatrixXd Kernel3x3::EdgeEnhancement()
 
 
 
-Eigen::MatrixXd Kernel3x3::AverageBlur()
+Eigen::MatrixXd Kernel3x3::AverageBlur() // BoxBlur
 {
-    //Eigen::MatrixXd kernel = Eigen::MatrixXd::Constant(3, 3, 1.0/9);
     Eigen::MatrixXd kernel = Eigen::MatrixXd(3, 3);
     kernel <<
         1.0/9, 1.0/9, 1.0/9, 
@@ -173,6 +171,8 @@ Eigen::MatrixXd Kernel3x3::RobinsonCompassSouthWest()
 
     return kernel;
 }
+
+
 
 Eigen::MatrixXd Kernel3x3::RobinsonCompassSouth()
 {
