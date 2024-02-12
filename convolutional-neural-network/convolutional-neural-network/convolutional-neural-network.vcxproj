@@ -81,7 +81,7 @@
     <LibraryPath>D:\w\.debugger\multy-layer-perceptron\dependencies\opencv\build\x64\vc16\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LibraryPath>D:\w\.debugger\multy-layer-perceptron\dependencies\opencv\build\x64\vc16\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Users\octav\opencv\build\x64\vc16\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -168,14 +168,14 @@ copy "D:\w\.debugger\convolutional-neural-network\.dependencies\opencv\build\x64
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\w\chaos-theory\lorenz-attractor\lorenz-attractor;D:\w\.debugger\convolutional-neural-network\.dependencies\eigen-3.4.0;D:\w\.debugger\convolutional-neural-network\.dependencies\opencv\build\include;D:\w\.debugger\convolutional-neural-network\.dependencies\json-develop\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\octav\source\repos\simple-CNN-refactor\.dependencies\eigen-3.4.0\eigen-3.4.0;C:\Users\octav\opencv\build\include;C:\Users\octav\source\repos\simple-CNN-refactor\.dependencies\json-develop\json-develop\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>D:\w\.debugger\convolutional-neural-network\.dependencies\opencv\build\x64\vc16\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\octav\opencv\build\x64\vc16\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>opencv_world470.lib;opencv_world470d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreLinkEvent>
@@ -183,8 +183,8 @@ copy "D:\w\.debugger\convolutional-neural-network\.dependencies\opencv\build\x64
       </Command>
     </PreLinkEvent>
     <PreBuildEvent>
-      <Command>copy "D:\w\.debugger\convolutional-neural-network\.dependencies\opencv\build\x64\vc16\bin\opencv_world470d.dll" "$(OutDir)"
-copy "D:\w\.debugger\convolutional-neural-network\.dependencies\opencv\build\x64\vc16\bin\opencv_world470.dll" "$(OutDir)"</Command>
+      <Command>copy "C:\Users\octav\opencv\build\x64\vc16\bin\opencv_world470d.dll" "$(OutDir)"
+copy "C:\Users\octav\opencv\build\x64\vc16\bin\opencv_world470.dll" "$(OutDir)"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
