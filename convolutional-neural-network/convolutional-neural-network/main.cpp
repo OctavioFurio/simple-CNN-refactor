@@ -43,7 +43,7 @@ int main(int argc, const char** argv)
 		return set;
 	};
 
-	std::vector<CnnData> trainigSet = LoadData("C:\\Users\\octav\\OneDrive\\Desktop\\strain");
+	std::vector<CnnData> trainigSet = LoadData(" ... ");
 
 	// std::vector<CnnData> testingSet = LoadData(" ... ");
 
@@ -84,7 +84,7 @@ int main(int argc, const char** argv)
 			int errors = 0;
 
 
-			for (const auto& entry : std::filesystem::directory_iterator("C:\\Users\\octav\\OneDrive\\Desktop\\strain")) {
+			for (const auto& entry : std::filesystem::directory_iterator(" ... ")) {
 				if (std::filesystem::is_regular_file(entry.path())) {
 
 					std::string fileName = entry.path().filename().string();
