@@ -1,12 +1,8 @@
 #pragma once
 
-
 #include "neuron.h"
 
-
-
 struct LayerArchitecture {
-
 	size_t _qntNeurons;
 	IActivationFunction* _activationFunction;
 	double _learningRate;
@@ -15,4 +11,3 @@ struct LayerArchitecture {
 		: _qntNeurons(qntNeurons), _activationFunction(activationFunction), _learningRate(learningRate)
 	{ }
 };
-

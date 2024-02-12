@@ -1,8 +1,5 @@
-#include <opencv2/opencv.hpp>
 #include "multy-layer-perceptron.h"
-
-
-
+#include <opencv2/opencv.hpp>
 
 MLP::MLP()
 {
@@ -13,19 +10,20 @@ MLP::MLP()
 
 MLP::MLP(size_t inputSize, std::vector<size_t> mlpArchitecture, IActivationFunction* activationFunction, double learningRate)
 {
-	_maxEphocs = 50000000;
-	_minError = -1.0;
-	_errorEnergy = -1.0;
-	_layersSize  =  mlpArchitecture.size();
+	_maxEphocs		 = 50000000;
+	_minError		 = -1.0;
+	_errorEnergy	 = -1.0;
+	_layersSize		 = mlpArchitecture.size();
 	_mlpArchitecture = mlpArchitecture;
-	_learningRate = learningRate;
-	_inputSize = inputSize;
-	_activationFunction = activationFunction;
-	size_t currentInputSize  =  inputSize;
-	size_t layerIndex = 0;
+	_learningRate	 = learningRate;
+	_inputSize		 = inputSize;
+
+	_activationFunction		= activationFunction;
+	size_t currentInputSize = inputSize;
+	size_t layerIndex		= 0;
 
 	for (auto neuronsInLayer : mlpArchitecture) {
-		_layers.push_back(  Layer(neuronsInLayer, currentInputSize, activationFunction, layerIndex++, learningRate)  );
+		_layers.push_back(Layer(neuronsInLayer, currentInputSize, activationFunction, layerIndex++, learningRate));
 		currentInputSize = neuronsInLayer;
 	}
 }
@@ -34,23 +32,23 @@ MLP::MLP(size_t inputSize, std::vector<size_t> mlpArchitecture, IActivationFunct
 
 MLP::MLP(size_t inputSize, std::vector<LayerArchitecture> layersArchitecture)
 {
-	_maxEphocs = 6000;
-	_minError = -1.0;
-	_errorEnergy = -1.0;
-	_layersSize  =  layersArchitecture.size();
-	//_mlpArchitecture = ;
-	_learningRate = 0.03;
-	_inputSize = inputSize;
-	_activationFunction = new Tanh();
-	size_t currentInputSize  =  inputSize;
-	size_t layerIndex = 0;
+	_maxEphocs		= 6000;
+	_minError		= -1.0;
+	_errorEnergy	= -1.0;
+	_layersSize		= layersArchitecture.size();
+	_learningRate	= 0.03;
+	_inputSize		= inputSize;
+
+	_activationFunction		= new Tanh();
+	size_t currentInputSize = inputSize;
+	size_t layerIndex		= 0;
 
 	for (auto layerArchitecture : layersArchitecture) {
 		size_t neuronsInLayer = layerArchitecture._qntNeurons;
 		IActivationFunction* activationFunction = layerArchitecture._activationFunction;
 		double learningRate = layerArchitecture._learningRate;
 
-		_layers.push_back( Layer(neuronsInLayer, currentInputSize, activationFunction, layerIndex++, learningRate) );
+		_layers.push_back(Layer(neuronsInLayer, currentInputSize, activationFunction, layerIndex++, learningRate));
 		currentInputSize = neuronsInLayer;
 	}
 }
@@ -86,42 +84,39 @@ std::vector<double> MLP::Forward(std::vector<double> inputs)
 		layerInput = nextLayerInput;
 	}
 
-	std::vector<double> lastLayerOutput  =  _layers[_layersSize-1].LayerOutputs();
+	std::vector<double> lastLayerOutput = _layers[_layersSize - 1].LayerOutputs();
 
-	return std::vector<double>( lastLayerOutput.begin()+1, lastLayerOutput.end() );
+	return std::vector<double>(lastLayerOutput.begin() + 1, lastLayerOutput.end());
 }
 
 
 
 std::vector<double> MLP::Backward(std::vector<double> correctOutputs, std::vector<double> inputs)
 {
-	int layerIndex = _layers.size() - 1;   // comecando de tras para frente 
-	
+	int layerIndex = _layers.size() - 1;
 
-	// atualizando a ultima camada
-	std::vector<double> InputForLastLayer  =  (layerIndex-1 < 0) ? inputs : _layers[layerIndex-1].LayerOutputs();
+	// Atualizando a ultima camada
+	std::vector<double> InputForLastLayer = (layerIndex - 1 < 0) ? inputs : _layers[layerIndex - 1].LayerOutputs();
 	_lastLayerErrors = _layers[layerIndex--].UpdateLastLayerNeurons(correctOutputs, InputForLastLayer);
 
 
-	// atualiza as outras camadas
+	// Atualiza as outras camadas (Última -> Segunda)
 	for (layerIndex; layerIndex > 0; layerIndex--) {
 
-		int neuronsInCurrentLayer  =  _layers[layerIndex].NumberOfNeurons();
-		std::vector<double> accumulatedPropagatedErrors  =  _layers[layerIndex+1].AccumulatedPropagatedErrorByPreviousLayer(neuronsInCurrentLayer);
-		std::vector<double> inputForCurrentLayer  =  _layers[layerIndex-1].LayerOutputs();
+		int neuronsInCurrentLayer = _layers[layerIndex].NumberOfNeurons();
+		std::vector<double> accumulatedPropagatedErrors = _layers[layerIndex + 1].AccumulatedPropagatedErrorByPreviousLayer(neuronsInCurrentLayer);
+		std::vector<double> inputForCurrentLayer = _layers[layerIndex - 1].LayerOutputs();
 
 		_layers[layerIndex].UpdateHiddenLayerNeurons(accumulatedPropagatedErrors, inputForCurrentLayer);
 	}
 
 
-	// atualiza a primeira camada
-	int neuronsInCurrentLayer  =  _layers[0].NumberOfNeurons();
-	std::vector<double> accumulatedPropagatedErrors  =  _layers[layerIndex+1].AccumulatedPropagatedErrorByPreviousLayer(neuronsInCurrentLayer);
+	// Atualiza a primeira camada
+	int neuronsInCurrentLayer = _layers[0].NumberOfNeurons();
+	std::vector<double> accumulatedPropagatedErrors = _layers[layerIndex + 1].AccumulatedPropagatedErrorByPreviousLayer(neuronsInCurrentLayer);
 	_layers[0].UpdateHiddenLayerNeurons(accumulatedPropagatedErrors, inputs);
 
-
-	// return gradient with respest to inputs
-	std::vector<double> fistLayerInputGradient  =  _layers[0].AccumulatedPropagatedErrorByPreviousLayer(inputs.size());
+	std::vector<double> fistLayerInputGradient = _layers[0].AccumulatedPropagatedErrorByPreviousLayer(inputs.size());
 
 	return fistLayerInputGradient;
 }
@@ -130,18 +125,19 @@ std::vector<double> MLP::Backward(std::vector<double> correctOutputs, std::vecto
 
 void MLP::Training(std::vector<TrainigData> trainigSet)
 {
-	size_t ephocs = 0;
+	size_t epochs = 0;
 	double errors = 1000000.0;
-	double errorEnergy = 1000000.0;
-	int trainingSetLenght = trainigSet.size();
 
-	while (ephocs <= _maxEphocs  &&  errors > _minError  && errorEnergy > _errorEnergy) {
+	double errorEnergy		= 1000000.0;
+	int trainingSetLenght	= trainigSet.size();
 
-		if (ephocs % 1000 == 0) { std::cout << *this; }
+	while (epochs <= _maxEphocs && errors > _minError && errorEnergy > _errorEnergy) {
+
+		if (epochs % 1000 == 0) { std::cout << *this; }
 
 		for (int i = 0; i < trainingSetLenght; i++) {
-			std::vector<double> inputs  =  trainigSet[i].first;
-			std::vector<double> labels  =  trainigSet[i].second;
+			std::vector<double> inputs = trainigSet[i].first;
+			std::vector<double> labels = trainigSet[i].second;
 
 			inputs.insert(inputs.begin(), 1.0);
 
@@ -149,19 +145,24 @@ void MLP::Training(std::vector<TrainigData> trainigSet)
 			Backward(labels, inputs);
 		}
 
-		//---------------------------
-		// criterios de parada
-		//---------------------------
-		
-		// mean error 
-		errors = 0.0;
+		//-----------
+		// Métricas
+		//-----------
+
+		// Mean Error 
+		errors		= 0.0;
 		errorEnergy = 0.0;
-		for (auto& e : _lastLayerErrors) { errors += std::abs(e);  errorEnergy += e * e; }
-		errors = errors / _layers[_layersSize-1].NumberOfNeurons();
+
+		for (auto& e : _lastLayerErrors) 
+		{ 
+			errors += std::abs(e);  
+			errorEnergy += e * e; 
+		}
+		
+		errors		=      errors / _layers[_layersSize - 1].NumberOfNeurons();
 		errorEnergy = errorEnergy / 2.0;
 
-		// ephocs
-		ephocs++;
+		epochs++;
 	}
 
 }
@@ -176,13 +177,13 @@ void MLP::Training(std::vector<TrainigData> trainigSet, int callbackExecutionPer
 	int trainingSetLenght = trainigSet.size();
 	int minimalChangesCounter = 0;
 
-	while (ephocs <= _maxEphocs  &&  errors > _minError  && errorEnergy > _errorEnergy  &&  minimalChangesCounter != 200) {
+	while (ephocs <= _maxEphocs && errors > _minError && errorEnergy > _errorEnergy && minimalChangesCounter != 200) {
 
 		for (int i = 0; i < trainingSetLenght; i++) {
-			std::vector<double> inputs  =  trainigSet[i].first;
-			std::vector<double> labels  =  trainigSet[i].second;
+			std::vector<double> inputs = trainigSet[i].first;
+			std::vector<double> labels = trainigSet[i].second;
 
-			inputs.insert(inputs.begin(), 1.0);                                     // <-- 1.0 que sera multiplicado pelo bias no produto vetorial
+			inputs.insert(inputs.begin(), 1.0); // <-- 1.0 que sera multiplicado pelo bias no produto vetorial
 
 			std::vector<double> lastLayaerOutput = Forward(inputs);
 			Backward(labels, inputs);
@@ -192,49 +193,46 @@ void MLP::Training(std::vector<TrainigData> trainigSet, int callbackExecutionPer
 		std::mt19937 g(rd());
 		std::shuffle(trainigSet.begin(), trainigSet.end(), g);
 
-		/// ------------------
-		/// imagem/video do mlp aprendendo - coloque seu calback aqui
-		/// ------------------
+		/*   imagem/video do mlp aprendendo - coloque seu calback aqui
 
 		if (ephocs % callbackExecutionPeriod == 0) { callback(); }
 
-		/// ------------------
+		*/
 
 		double currentErrors = 0.0;
-		errorEnergy = 0.0;
+		errorEnergy			 = 0.0;
 
 		for (auto& e : _lastLayerErrors) { currentErrors += std::abs(e);  errorEnergy += e * e; }
 
-		currentErrors = currentErrors / _layers[_layersSize-1].NumberOfNeurons();
-		errorEnergy = errorEnergy / 2.0;
+		currentErrors	= currentErrors / _layers[_layersSize - 1].NumberOfNeurons();
+		errorEnergy		=   errorEnergy / 2.0;
 
 		if (std::abs(errors - currentErrors) < 1.0e-10) { minimalChangesCounter++; }
 		else { minimalChangesCounter = 0; }
 
-		errors = currentErrors; 
+		errors = currentErrors;
 
-		if (!(ephocs <= _maxEphocs)) { std::cout << "\n\n[MAX EPHOC]\n\n"; } 
-		else if (!(errors > _minError)) { std::cout << "\n\n[MIN ERROR]\n\n"; } 
+		if (!(ephocs <= _maxEphocs)) { std::cout << "\n\n[MAX EPHOC]\n\n"; }
+		else if (!(errors > _minError)) { std::cout << "\n\n[MIN ERROR]\n\n"; }
 		else if (!(minimalChangesCounter != 20)) { std::cout << "\n\n[ERROR NOT CHANGING]\n\n"; }
 
 		ephocs++;
 	}
-	 
 }
 
 
 
 void MLP::Training(std::vector<DATA> dataSet, std::function<std::vector<double>(int)> ParseLabelIndexToLastLayerOutput)
 {
-	int numberOfNeuronInLastLayer = _layers[_layers.size()-1].NumberOfNeurons();
+	int numberOfNeuronInLastLayer = _layers[_layers.size() - 1].NumberOfNeurons();
 
 	std::vector<TrainigData> trainigSet;
 	for (auto& t : dataSet) {
 		std::vector<double> correctLastLayerOutputs = ParseLabelIndexToLastLayerOutput(t.labelIndex);
-		
+
 		assert(correctLastLayerOutputs.size() == numberOfNeuronInLastLayer);
 
-		trainigSet.push_back( { t.inputs, correctLastLayerOutputs } );
+		trainigSet.push_back({ t.inputs, correctLastLayerOutputs });
 	}
 
 	Training(trainigSet);
@@ -243,12 +241,12 @@ void MLP::Training(std::vector<DATA> dataSet, std::function<std::vector<double>(
 
 
 void MLP::Training(
-	std::vector<DATA> dataSet
-	, int callbackExecutionPeriod
-	, std::function<std::vector<double>(int)> ParseLabelIndexToLastLayerOutput
-	, std::function<void(void)> callback
+	std::vector<DATA> dataSet,
+	int callbackExecutionPeriod,
+	std::function<std::vector<double>(int)> ParseLabelIndexToLastLayerOutput,
+	std::function<void(void)> callback
 ) {
-	int numberOfNeuronInLastLayer = _layers[_layers.size()-1].NumberOfNeurons();
+	int numberOfNeuronInLastLayer = _layers[_layers.size() - 1].NumberOfNeurons();
 
 	std::vector<TrainigData> trainigSet;
 	for (auto& t : dataSet) {
@@ -265,9 +263,9 @@ void MLP::Training(
 
 
 void MLP::Processing(
-	std::vector<std::vector<double>> processingSet
-	, std::function<int(std::vector<double>)> ParseOutputToLabelIndex
-	, std::function<void(int)> AfterProcessing
+	std::vector<std::vector<double>> processingSet,
+	std::function<int(std::vector<double>)> ParseOutputToLabelIndex,
+	std::function<void(int)> AfterProcessing
 ) {
 
 	std::cout << *this << "\n\n";
@@ -277,8 +275,8 @@ void MLP::Processing(
 		inputs.insert(inputs.begin(), 1.0);
 
 		std::vector<double> output = Forward(inputs);
-		int labelIndex = ParseOutputToLabelIndex( output );
-		AfterProcessing( labelIndex );
+		int labelIndex = ParseOutputToLabelIndex(output);
+		AfterProcessing(labelIndex);
 	}
 }
 
@@ -312,15 +310,16 @@ Json MLP::ToJson() const
 void MLP::GenerateJsonFile(const char* filePath)
 {
 	Json json = ToJson();
-	
+
 	std::ofstream arquivoSaida(filePath);
 
 
 	if (arquivoSaida.is_open()) {
 		arquivoSaida << json.dump(4);
 		arquivoSaida.close();
-	} else {
-		std::cerr << "\n\n[ERROR]: could not open file !!! \n\n";
+	}
+	else {
+		std::cerr << "\n\n[ERROR]: Arquivo inacessivel!!! \n\n";
 	}
 }
 
@@ -333,16 +332,15 @@ std::vector<double> MLP::EvaluateInputs(std::vector<double> inputs)
 	for (auto& layer : _layers) {
 
 		int layerNeuronIndex = 1;
-		std::vector<double> nextLayerInput = std::vector<double>((size_t)layer.NumberOfNeurons()+1, 1.0);
+		std::vector<double> nextLayerInput = std::vector<double>((size_t)layer.NumberOfNeurons() + 1, 1.0);
 
-		for (auto& neuron : layer.Neurons()) {
+		for (auto& neuron : layer.Neurons())
 			nextLayerInput[layerNeuronIndex++] = neuron.EvaluateInputs(layerInput);
-		}
-			 
+
 		layerInput = nextLayerInput;
 	}
 
-	return std::vector<double>(layerInput.begin()+1, layerInput.end());
+	return std::vector<double>(layerInput.begin() + 1, layerInput.end());
 }
 
 
@@ -363,7 +361,6 @@ void MLP::LoadFromJson(const Json& j)
 	std::string funcName = j["activation-funtion"].get<std::string>();
 	IActivationFunction* actFunc = StringToActivationFunction(funcName);
 
-	// MLP::MLP(std::vector<size_t> mlpArchitecture, size_t inputSize, IActivationFunction* activationFunction, double learningRate)
 	(*this) = MLP(inputSize, architecture, actFunc, learningRate);
 
 	int layerIndex = 0;
@@ -390,21 +387,21 @@ void MLP::LoadWeightsFromJson(const char* filePath)
 	jsonFile >> json;
 	jsonFile.close();
 
-	LoadFromJson( json );
+	LoadFromJson(json);
 }
 
 
 
 IActivationFunction* MLP::StringToActivationFunction(std::string functionName)
 {
-	if (functionName == "ReLU") { return new ReLU(); }
-	else if (functionName == "LeakyReLU") { return new LeakyReLU(); }
-	else if (functionName == "Tanh") { return new Tanh(); }
-	else if (functionName == "NormalizedTanh") { return new NormalizedTanh(); }
-	else if (functionName == "Sigmoid") { return new Sigmoid(); }
-	else if (functionName == "AdaptedSigmoid") { return new AdaptedSigmoid(); }
-	else if (functionName == "Linear") { return new Linear(); }
-	else { return nullptr; }
+	if		(functionName == "ReLU")			{ return new ReLU();			}
+	else if (functionName == "LeakyReLU")		{ return new LeakyReLU();		}
+	else if (functionName == "Tanh")			{ return new Tanh();			}
+	else if (functionName == "NormalizedTanh")	{ return new NormalizedTanh();	}
+	else if (functionName == "Sigmoid")			{ return new Sigmoid();			}
+	else if (functionName == "AdaptedSigmoid")	{ return new AdaptedSigmoid();	}
+	else if (functionName == "Linear")			{ return new Linear();			}
+	else										{ return nullptr;				}
 }
 
 
@@ -433,7 +430,7 @@ void MLP::MaximunEphocs(size_t ephocs)
 std::ostream& operator<<(std::ostream& os, MLP mlp)
 {
 	int layerIndex = 0;
-	
+
 	for (auto& layer : mlp._layers) {
 		std::cout << "LAYER: " << layerIndex << "\n";
 		std::cout << layer << "\n\n";
