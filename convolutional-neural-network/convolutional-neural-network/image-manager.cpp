@@ -1,8 +1,5 @@
 #include "image-manager.h"
 
-
-
-
 ImageManager::ImageManager(std::string filePath)
 {
 	_image = cv::imread(filePath);
@@ -33,7 +30,7 @@ std::vector<std::vector<double>> ImageManager::ProcessingSet()
 {
 	std::vector<std::vector<double>> processingSet;
 	
-	for (int i = 0; i < 28; i++) {
+	for (int i = 0; i < 28; i++)
 		for (int j = 0; j < 28; j++) {
 			
 			double normalizedI = Utils::Normalize(i, 0.0, 27.0, -1.0, 1.0);
@@ -42,7 +39,6 @@ std::vector<std::vector<double>> ImageManager::ProcessingSet()
 			processingSet.push_back( {normalizedI,  normalizedJ} );
 
 		}
-	}
 
 	return processingSet;
 }
@@ -51,7 +47,7 @@ std::vector<std::vector<double>> ImageManager::ProcessingSet()
 
 void ImageManager::ExtractDatas(cv::Mat& image)
 {
-	for (int i = 0; i < image.rows; i++) {
+	for (int i = 0; i < image.rows; i++)
 		for (int j = 0; j < image.cols; j++) {
 
 			cv::Vec3d pixel = image.at<cv::Vec3d>(i, j);
@@ -68,9 +64,7 @@ void ImageManager::ExtractDatas(cv::Mat& image)
 
 				_trainingSet.push_back(DATA{ {normalizedI,  normalizedJ}, labelIndex });
 			}
-
 		}
-	}
 }
 
 
@@ -80,7 +74,6 @@ int ImageManager::MaxChannel(const cv::Vec3d& pixel)
 	int maxChannel = 0;
 
 	if (pixel[1] >= pixel[maxChannel]) { maxChannel = 1; }
-
 	if (pixel[2] >= pixel[maxChannel]) { maxChannel = 2; }
 
 	return maxChannel;

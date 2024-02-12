@@ -41,7 +41,7 @@ CNN::~CNN()
 
 
 
-std::vector<double> CNN::Forward( Eigen::MatrixXd input )
+std::vector<double> CNN::Forward(Eigen::MatrixXd input)
 {
 	std::vector<double> DEBUGflattInput = Utils::FlatMatrix(input);
 	Eigen::MatrixXd processResult = input;
@@ -76,7 +76,7 @@ std::vector<double> CNN::Forward( Eigen::MatrixXd input )
 
 
 
-std::vector<double> CNN::Backward( std::vector<double> correctOutputs, Eigen::MatrixXd input )
+std::vector<double> CNN::Backward(std::vector<double> correctOutputs, Eigen::MatrixXd input)
 {
 	std::vector<double> inputsGradient = _mlp.Backward(correctOutputs, _flattedMatrix);
 	inputsGradient = std::vector<double>(inputsGradient.begin() + 1, inputsGradient.end());
@@ -99,7 +99,7 @@ std::vector<double> CNN::Backward( std::vector<double> correctOutputs, Eigen::Ma
 
 
 
-std::vector<double> CNN::Flattening( Eigen::MatrixXd input )
+std::vector<double> CNN::Flattening(Eigen::MatrixXd input)
 {
 	std::vector<double> vec;
 	vec.reserve(input.size());
@@ -113,7 +113,7 @@ std::vector<double> CNN::Flattening( Eigen::MatrixXd input )
 
 
 
-Eigen::MatrixXd CNN::Reshape( std::vector<double> gradients, size_t rows, size_t cols )
+Eigen::MatrixXd CNN::Reshape(std::vector<double> gradients, size_t rows, size_t cols)
 {
 	Eigen::MatrixXd reshapedMatrix = Eigen::MatrixXd::Zero(rows, cols);
 
@@ -152,7 +152,7 @@ std::ostream& operator<<(std::ostream& os, CNN cnn)
 
 
 
-void CNN::Training( std::vector<CnnTrainingData> trainigSet )
+void CNN::Training(std::vector<CnnTrainingData> trainigSet)
 {
 	size_t epochs = 0;
 	double errors = 9999999.9;
@@ -189,7 +189,7 @@ void CNN::Training( std::vector<CnnTrainingData> trainigSet )
 
 
 
-void CNN::Training( std::vector<CnnData> dataSet, std::function<std::vector<double>(int)> ParseLabelIndexToLastLayerOutput )
+void CNN::Training(std::vector<CnnData> dataSet, std::function<std::vector<double>(int)> ParseLabelIndexToLastLayerOutput)
 {
 	int numberOfNeuronInLastLayer = _mlp._layers[_mlp._layers.size() - 1].NumberOfNeurons();
 
@@ -209,10 +209,10 @@ void CNN::Training( std::vector<CnnData> dataSet, std::function<std::vector<doub
 
 
 void CNN::Training(
-	std::vector<CnnTrainingData> trainigSet, 
-	int callbackExecutionPeriod, 
+	std::vector<CnnTrainingData> trainigSet,
+	int callbackExecutionPeriod,
 	std::function<void(void)> callback
-){
+) {
 	size_t epochs = 0;
 	double errors = 100.0;
 	double errorEnergy = 100.0;
@@ -270,7 +270,7 @@ void CNN::Training(
 	int callbackExecutionPeriod,
 	std::function<std::vector<double>(int)> ParseLabelIndexToLastLayerOutput,
 	std::function<void(void)> callback
-){
+) {
 	int numberOfNeuronInLastLayer = _mlp._layers[_mlp._layers.size() - 1].NumberOfNeurons();
 
 	std::vector<CnnTrainingData> trainigSet;
@@ -288,14 +288,14 @@ void CNN::Training(
 
 
 
-void CNN::MaxAcceptableError( double error )
+void CNN::MaxAcceptableError(double error)
 {
 	_minError = error;
 }
 
 
 
-std::vector<double> CNN::ProcessInput( Eigen::MatrixXd input )
+std::vector<double> CNN::ProcessInput(Eigen::MatrixXd input)
 {
 	std::vector<double> givenOutputFromLastLayer = Forward(input);
 	return givenOutputFromLastLayer;
@@ -317,7 +317,7 @@ const double CNN::Error()
 
 
 
-void CNN::LearningRate( double rate )
+void CNN::LearningRate(double rate)
 {
 	_learningRate = rate;
 }

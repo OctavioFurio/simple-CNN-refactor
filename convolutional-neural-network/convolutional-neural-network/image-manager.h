@@ -5,16 +5,13 @@
 #include <string>
 #include "mlp-input-data.h"
 
-
 class ImageManager {
-
 	private:
 	cv::Mat _image;
 	std::vector<DATA> _trainingSet;
 
 	void ExtractDatas(cv::Mat& image);
 	static int MaxChannel(const cv::Vec3d& pixel);
-
 
 	public:
 	ImageManager(std::string filePath);
@@ -24,5 +21,3 @@ class ImageManager {
 	std::vector<std::vector<double>> ProcessingSet();
 
 };
-
-

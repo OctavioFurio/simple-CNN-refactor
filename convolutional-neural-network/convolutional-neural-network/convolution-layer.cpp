@@ -78,7 +78,7 @@ Eigen::MatrixXd ConvolutionLayer::Convolution2D(Eigen::MatrixXd input, Eigen::Ma
 
 	Eigen::MatrixXd result = Eigen::MatrixXd::Zero(rows, cols);
 
-	for (int i = 0; i < rows; ++i) 
+	for (int i = 0; i < rows; ++i)
 		for (int j = 0; j < cols; ++j) {
 			double sum = input.block(i, j, kernelRows, kernelCols).cwiseProduct(kernel).sum();
 			result(i, j) = sum;

@@ -60,8 +60,8 @@ Eigen::MatrixXd ProcessLayer::ConvolutionBackward(Eigen::MatrixXd input, Eigen::
 
 Eigen::MatrixXd ProcessLayer::ApplayActivationFunction(Eigen::MatrixXd input)
 {
-	for (int i = 0; i < input.rows(); i++) 
-		for (int j = 0; j < input.cols(); j++) 
+	for (int i = 0; i < input.rows(); i++)
+		for (int j = 0; j < input.cols(); j++)
 			input(i, j) = _activationFunction->f(input(i, j));
 
 	return input;
